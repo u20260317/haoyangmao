@@ -124,15 +124,19 @@ async function fetchTelegramChannel(ch, label){
 
 async function fetchGitHub(){
   const queries=[
-    ["topic:free-tier","免费层项目"],
-    ["topic:free-api","免费 API 项目"],
-    ["topic:freebies","免费好物"],
-    ["free tier in:description stars:>100","热门免费层"],
-    ["awesome free apis in:name,description","Awesome 清单"]
+    ["topic:free-tier","免费层项目","updated"],
+    ["topic:free-api","免费 API 项目","updated"],
+    ["topic:freebies","免费好物","updated"],
+    ["free tier in:description stars:>100","热门免费层","updated"],
+    ["awesome free apis in:name,description","Awesome 清单","updated"],
+    ["topic:llm-gateway","AI 网关/中转","stars"],
+    ["one-api in:name","AI 中转/网关","stars"],
+    ["free-llm-api in:name,description","免费 LLM 清单","stars"]
   ];
   const out=[]; const seen=new Set();
-  for(const [q,qlabel] of queries){
-    const j=await fetchJSON("https://api.github.com/search/repositories?q="+encodeURIComponent(q)+"&sort=updated&order=desc&per_page=20");
+  for(const [q,qlabel,qsort] of queries){
+    let j=null;
+    try{ j=await fetchJSON("https://api.github.com/search/repositories?q="+encodeURIComponent(q)+"&sort="+(qsort||"updated")+"&order=desc&per_page=20"); }catch(e){ continue; }
     for(const r of (j.items||[])){
       if(seen.has(r.full_name)) continue; seen.add(r.full_name);
       out.push({id:"gh-"+r.id, title:r.full_name, cat:"GitHub 开源", sub:qlabel, type:"开源项目", trust:"list", valueLabel:"★ "+r.stargazers_count, valueNum:r.stargazers_count||0, desc:(r.description||"GitHub 最新免费/免费层相关开源项目").slice(0,220), endISO:null, endLabel:"开源项目", url:r.html_url, source:"GitHub Search · "+(r.language||""), srcDate:(r.pushed_at||"").slice(0,10)||null, stars:r.stargazers_count||0});
@@ -141,14 +145,69 @@ async function fetchGitHub(){
   return out;
 }
 
+
+function parseFreeNewapi(text){
+  const out=[]; let section="";
+  for(const line of text.split("\n")){
+    const h=line.match(/^##\s+(.+)/); if(h){ section=h[1]; continue; }
+    if(!line.startsWith("|")) continue;
+    const cells=line.split("|").map(c=>c.trim());
+    if(cells.length<5) continue;
+    const name=cells[1].replace(/[`*]/g,"").trim();
+    if(!name || name==="平台" || name==="名称" || name==="项目" || /^---/.test(name)) continue;
+    const raw=cells[2]||"";
+    let url=""; const lm=raw.match(/\((https?:[^)]+)\)/); if(lm) url=lm[1];
+    if(!url){ const bm=raw.match(/`([^`]+)`/); if(bm) url=bm[1]; }
+    if(!url){ const hm=raw.match(/https?:[^\s)]+/); if(hm) url=hm[0]; }
+    if(!url) continue;
+    if(!/^https?:\/\//.test(url)) url="https://"+url;
+    url=url.replace(/([?&])(aff|utm_source|utm_medium|utm_campaign)=[^&]+&?/g,"$1").replace(/[?&]$/,"").replace(/\?&/,"?");
+    const isRelay=/公益中转站/.test(section), isTool=/开源/.test(section);
+    const quota=(cells[3]||"").replace(/<[^>]+>/g,"").trim();
+    const note=(cells[4]||"").replace(/<[^>]+>/g,"").trim();
+    out.push({id:"rna-"+slug(name)+"-"+Math.abs([...url].reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,0)), title:name, cat:isTool?"GitHub 开源":"AI 与订阅", sub:isTool?"AI 中转/网关":(isRelay?"公益中转站":"免费 AI API 渠道"), type:isTool?"开源项目":(isRelay?"公益中转站":"官方免费额度"), trust:isRelay?"community":"list", valueLabel:quota.slice(0,60)||"免费额度", valueNum:0, desc:((quota?quota+"。":"")+(note||"")).slice(0,200)+(isRelay?" ⚠ 公益站由社区维护，可能掺水/跑路：勿传敏感数据、勿大额充值":""), endISO:null, endLabel:"以官网为准", url, source:"free-newapi 导航 · "+(section.replace(/^[一二三四]、/,"")||"清单"), srcDate:null});
+    if(out.length>=70) break;
+  }
+  // 公益中转站 section is an HTML table in this README
+  const seg=text.split("## 一、公益中转站")[1]; 
+  if(seg){
+    const body=seg.split("## 二、")[0];
+    const rows=body.match(/<tr>[\s\S]*?<\/tr>/g)||[];
+    for(const r of rows){
+      const tds=[...r.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(m=>m[1]);
+      if(tds.length<5) continue;
+      const name=stripTags(tds[0]).trim(); if(!name) continue;
+      const hm=r.match(/href="(https?:[^"]+)"/); if(!hm) continue;
+      const url=hm[1].replace(/([?&])(aff|utm_source|utm_medium|utm_campaign)=[^&]+&?/g,"$1").replace(/[?&]$/,"").replace(/\?&/,"?");
+      const quota=stripTags(tds[2]).trim(), models=stripTags(tds[3]).trim(), note=stripTags(tds[4]).trim();
+      if(/付费中转站|疑似跑路|已跑路/.test(note+quota)) continue;
+      out.push({id:"relay-"+slug(name)+"-"+Math.abs([...url].reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,0)), title:name+"（公益中转站）", cat:"AI 与订阅", sub:"公益中转站", type:"公益中转站", trust:"community", valueLabel:(quota||"免费额度").slice(0,60), valueNum:0, desc:((quota?quota+"。":"")+(models?"覆盖："+models+"。":"")+(note||"")).slice(0,200)+" ⚠ 公益站由社区维护，可能掺水/跑路：勿传敏感数据、勿大额充值", endISO:null, endLabel:"以官网为准", url, source:"free-newapi 导航 · 公益中转站", srcDate:null});
+    }
+  }
+  return out;
+}
+function parseAwesomeFreeLLM(text){
+  const out=[]; const lines=text.split("\n");
+  for(let i=0;i<lines.length;i++){
+    const m=lines[i].match(/^### \[([^\]]+)\]\((https?:[^)]+)\)/); if(!m) continue;
+    let desc="";
+    for(let k=i+1;k<Math.min(i+5,lines.length);k++){ const t=lines[k].trim(); if(t && !t.startsWith("<")){ desc=t.replace(/<[^>]+>/g,"").slice(0,200); break; } }
+    out.push({id:"afl-"+slug(m[1]), title:m[1]+" — 免费 LLM API", cat:"AI 与订阅", sub:"免费 AI API 渠道", type:"官方免费额度", trust:"list", valueLabel:"永久免费层", valueNum:0, desc:desc||"awesome-free-llm-apis 收录的永久免费层 LLM API，自己注册拿 Key", endISO:null, endLabel:"长期（以官网为准）", url:m[2], source:"awesome-free-llm-apis", srcDate:null});
+    if(out.length>=60) break;
+  }
+  return out;
+}
+
 async function refresh(env){
-  const counts={seed:SEED.length, freeForDev:0, publicApis:0, github:0, rss:0, hackerNews:0, telegram:0};
+  const counts={seed:SEED.length, freeForDev:0, publicApis:0, github:0, rss:0, hackerNews:0, telegram:0, relayNav:0, freeLlm:0};
   const errors=[]; let items=[...SEED];
   try{ const t=await fetchText("https://raw.githubusercontent.com/ripienaar/free-for-dev/master/README.md"); const p=parseFreeForDev(t); counts.freeForDev=p.length; items=items.concat(p); }catch(e){ errors.push("free-for-dev: "+e.message); }
   try{ const t=await fetchText("https://raw.githubusercontent.com/public-apis/public-apis/master/README.md"); const p=parsePublicApis(t); counts.publicApis=p.length; items=items.concat(p); }catch(e){ errors.push("public-apis: "+e.message); }
   try{ const p=await fetchGitHub(); counts.github=p.length; items=items.concat(p); }catch(e){ errors.push("github: "+e.message); }
   for(const f of RSS_FEEDS){ try{ const t=await fetchText(f.url); const p=parseRSS(t,f); counts.rss+=p.length; items=items.concat(p); }catch(e){ errors.push(f.prefix+": "+e.message); } }
   try{ const p=await fetchHN(); counts.hackerNews=p.length; items=items.concat(p); }catch(e){ errors.push("hn: "+e.message); }
+  try{ const t=await fetchText("https://raw.githubusercontent.com/kirito8/free-newapi/main/README.md"); const p=parseFreeNewapi(t); counts.relayNav=p.length; items=items.concat(p); }catch(e){ errors.push("free-newapi: "+e.message); }
+  try{ const t=await fetchText("https://raw.githubusercontent.com/mnfst/awesome-free-llm-apis/main/README.md"); const p=parseAwesomeFreeLLM(t); counts.freeLlm=p.length; items=items.concat(p); }catch(e){ errors.push("awesome-free-llm: "+e.message); }
   for(const [ch,label] of TG_CHANNELS){ try{ const p=await fetchTelegramChannel(ch,label); counts.telegram+=p.length; items=items.concat(p); }catch(e){ errors.push("tg-"+ch+": "+e.message); } }
   const seen=new Set(); items=items.filter(d=>{ const k=d.title+'|'+d.url; if(seen.has(k)) return false; seen.add(k); return true; });
   const meta={updatedAt:new Date().toISOString(), counts, errors, total:items.length};
@@ -246,7 +305,7 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 </div>
 <div id="viewRes" style="display:none"><div class="grid" id="res"></div>
 <p class="foot">规则：只用免费计划，不绑卡、不升级、不付费。遇登录、授权、验证码、密码立即停下由你接管；每项先实际验证可用再进入下一项。状态为信息整理，不代表已开通。</p></div>
-<p class="foot">数据来源：人工核实种子（官方页）· free-for-dev 社区清单 · public-apis 免费 API 目录 · GitHub Search 最新项目 · Slickdeals（美国）· OzBargain（澳洲）· Doctor of Credit（银行与卡奖励）· Frequent Miler（里程积分）· Airdrops.io（加密空投）· Giveaway of the Day（每日免费软件）· Hacker News · V2EX（关键词过滤）· Telegram GrabFreeGames（免费游戏）。系统每 2 小时自动抓取，过期自动归档。Pepper 系（mydealz / hotukdeals / dealabs）与 Reddit 服务端抓取被对方拒绝，未接入。社区爆料时效以原帖为准，请以官方页核实后参与。</p>
+<p class="foot">数据来源：人工核实种子（官方页）· free-for-dev 社区清单 · public-apis 免费 API 目录 · GitHub Search 最新项目 · Slickdeals（美国）· OzBargain（澳洲）· Doctor of Credit（银行与卡奖励）· Frequent Miler（里程积分）· Airdrops.io（加密空投）· Giveaway of the Day（每日免费软件）· Hacker News · V2EX（关键词过滤）· Telegram GrabFreeGames（免费游戏）· free-newapi 中转站导航（官方免费额度 + 公益中转站 + 自建工具）· awesome-free-llm-apis（永久免费 LLM API 清单）。公益中转站由社区维护，存在掺水/跑路风险：只建议注册领免费额度试用，勿传敏感数据、勿大额充值；公开共享 Key 类渠道不收录。系统每 2 小时自动抓取，过期自动归档。Pepper 系（mydealz / hotukdeals / dealabs）与 Reddit 服务端抓取被对方拒绝，未接入。社区爆料时效以原帖为准，请以官方页核实后参与。</p>
 </div><script>
 const RES=${res};
 let deals=[], meta=null, filter='全部', subFilter='全部小类', page=1; const PAGE_SIZE=24;
@@ -270,7 +329,7 @@ function render(){
  sToday.textContent=deals.filter(d=>d.srcDate===today).length;
  sSoon.textContent=deals.filter(soon7).length;
  sPending.textContent=active.filter(d=>d.trust==='unverified').length;
- if(meta){const names={seed:'人工核实',freeForDev:'free-for-dev',publicApis:'public-apis',github:'GitHub',rss:'全球社区',hackerNews:'Hacker News',telegram:'Telegram'};metaLine.textContent='上次自动更新：'+new Date(meta.updatedAt).toLocaleString('zh-CN')+' · 共 '+meta.total+' 条 · '+Object.keys(meta.counts).map(k=>(names[k]||k)+' '+meta.counts[k]).join(' · ')+(meta.errors&&meta.errors.length?' · 部分来源失败：'+meta.errors.join('；'):'')}
+ if(meta){const names={seed:'人工核实',freeForDev:'free-for-dev',publicApis:'public-apis',github:'GitHub',rss:'全球社区',hackerNews:'Hacker News',telegram:'Telegram',relayNav:'中转站导航',freeLlm:'免费LLM清单'};metaLine.textContent='上次自动更新：'+new Date(meta.updatedAt).toLocaleString('zh-CN')+' · 共 '+meta.total+' 条 · '+Object.keys(meta.counts).map(k=>(names[k]||k)+' '+meta.counts[k]).join(' · ')+(meta.errors&&meta.errors.length?' · 部分来源失败：'+meta.errors.join('；'):'')}
  renderChips();
  let q=document.getElementById('q').value.toLowerCase();
  let arr=deals.filter(d=>{
