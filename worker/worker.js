@@ -147,6 +147,8 @@ const RSS_FEEDS=[
  {prefix:"toys", url:"https://9to5toys.com/feed/", cat:"全球购物羊毛", sub:"数码特价", type:"社区爆料", region:"美国", source:"9to5Toys", cap:20, fallback:"9to5Toys 数码产品特价"},
  {prefix:"sos", url:"https://sharewareonsale.com/feed", cat:"免费软件游戏", sub:"软件限免", type:"限时免费", region:"全球", source:"SharewareOnSale", cap:20, fallback:"SharewareOnSale 软件限免"},
  {prefix:"fcc", url:"https://www.freecodecamp.org/news/rss/", cat:"科技情报", sub:"免费教程", type:"免费教程", region:"全球", source:"freeCodeCamp", cap:10, fallback:"freeCodeCamp 免费编程教程"},
+ {prefix:"ns", url:"https://rss.nodeseek.com/", cat:"科技情报", sub:"中文社区", type:"社区爆料", region:"中文社区", source:"NodeSeek", cap:15, keywords:/免费|羊毛|优惠|赠送|空投|活动|促销|折扣|白嫖|领取|抽奖|0\s?元/, fallback:"NodeSeek 社区羊毛与活动帖子"},
+ {prefix:"sspai", url:"https://sspai.com/feed", cat:"科技情报", sub:"中文社区", type:"社区爆料", region:"中文社区", source:"少数派", cap:8, keywords:/免费|限免|优惠|折扣|促销|赠送/, fallback:"少数派的免费/优惠相关文章"},
  {prefix:"yt-dm", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UCrF3EFFx8eCWrKrX8ez60VQ", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"北美", source:"YouTube · DealMoon 北美省钱君", cap:8, fallback:"北美省钱君 DealMoon 的优惠视频"},
  {prefix:"yt-dg", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UC5Qbo0AR3CwpmEq751BIy0g", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"美国", source:"YouTube · The Deal Guy", cap:8, fallback:"The Deal Guy 的省钱优惠视频"},
  {prefix:"yt-h2s", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UC3WvpVKk_QgfNgzE5BvzdEw", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"美国", source:"YouTube · Hip2Save", cap:8, fallback:"Hip2Save 的优惠视频"},
