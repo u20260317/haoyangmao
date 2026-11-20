@@ -442,7 +442,7 @@ function setSub(x){subFilter=x;page=1;render()}
 function soon7(d){return d.endISO && !d.ended && (new Date(d.endISO).getTime()-Date.now())<7*864e5}
 function cardHTML(d){
  const t=T();
- return '<div class="card'+(d.featured?' glow':'')+'">'+(d.featured?'<span class="fbadge">'+t.featuredBadge+'</span>':'')+'<span class="tag">'+esc(L(d.cat))+'</span>'+(d.sub?'<span class="stag">'+esc(SL(d.sub))+'</span>':'')+'<span class="ptag">'+esc(d.type)+'</span>'+trustTag(d)+' <a href="#" onclick="toggleFav(\''+d.id+'\');return false" style="float:right">'+(favs.has(d.id)?'★':'☆')+'</a><h3>'+esc(d.title)+'</h3><p class="desc">'+esc(d.desc||'')+'</p><p class="mut">'+t.value+'：'+esc(d.valueLabel||'—')+' · '+t.deadline+'：'+esc(d.endLabel||'—')+(d.srcDate?' · '+t.updated+'：'+esc(d.srcDate):'')+'</p><p class="mut">'+t.source+'：'+esc(d.source)+'</p><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+t.visit+'</a></div>';
+ return '<div class="card'+(d.featured?' glow':'')+'">'+(d.featured?'<span class="fbadge">'+t.featuredBadge+'</span>':'')+'<span class="tag">'+esc(L(d.cat))+'</span>'+(d.sub?'<span class="stag">'+esc(SL(d.sub))+'</span>':'')+'<span class="ptag">'+esc(d.type)+'</span>'+trustTag(d)+' <a href="#" onclick="toggleFav(&quot;'+d.id+'&quot;);return false" style="float:right">'+(favs.has(d.id)?'★':'☆')+'</a><h3>'+esc(d.title)+'</h3><p class="desc">'+esc(d.desc||'')+'</p><p class="mut">'+t.value+'：'+esc(d.valueLabel||'—')+' · '+t.deadline+'：'+esc(d.endLabel||'—')+(d.srcDate?' · '+t.updated+'：'+esc(d.srcDate):'')+'</p><p class="mut">'+t.source+'：'+esc(d.source)+'</p><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+t.visit+'</a></div>';
 }
 function render(){
  const t=T(); const today=new Date().toISOString().slice(0,10);
