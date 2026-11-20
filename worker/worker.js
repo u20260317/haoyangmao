@@ -87,6 +87,19 @@ function parseRSS(xml, cfg){
   return out;
 }
 const TG_CHANNELS=[["GrabFreeGames","GrabFreeGames · 免费游戏"]];
+
+const SEED_MEDIA=[
+ {id:"m-pollinations",title:"Pollinations — 免费出图 API（免 Key）",cat:"AI 与订阅",sub:"免费出图出视频",type:"官方免费额度",trust:"official",valueLabel:"免费 · 免注册",valueNum:0,desc:"开源免费生成 API：文本/图片生成可直接通过 URL 调用，匿名可用，自媒体配图神器",endISO:null,endLabel:"长期（以官网为准）",url:"https://pollinations.ai",source:"官方页",srcDate:null},
+ {id:"m-silicon-img",title:"硅基流动 — 免费生图模型（Kolors 等）",cat:"AI 与订阅",sub:"免费出图出视频",type:"官方免费额度",trust:"official",valueLabel:"部分模型免费",valueNum:0,desc:"国内直连，平台有多个免费生图/语言模型，注册后在控制台拿 Key 调用",endISO:null,endLabel:"长期（以官网为准）",url:"https://cloud.siliconflow.cn",source:"官方页",srcDate:null},
+ {id:"m-modelscope-img",title:"ModelScope 魔搭 — 免费生图/视频模型 API",cat:"AI 与订阅",sub:"免费出图出视频",type:"官方免费额度",trust:"official",valueLabel:"每日免费调用次数",valueNum:0,desc:"阿里魔搭社区 3000+ 模型，API-Inference 每日有免费调用额度，含生图与视频模型",endISO:null,endLabel:"长期（以官网为准）",url:"https://modelscope.cn",source:"官方页",srcDate:null},
+ {id:"m-cf-img",title:"Cloudflare Workers AI — 含生图模型免费额度",cat:"AI 与订阅",sub:"免费出图出视频",type:"官方免费额度",trust:"official",valueLabel:"每日 10,000 Neurons",valueNum:0,desc:"Workers 免费计划每日赠推理额度，模型目录含 Stable Diffusion / FLUX 等生图模型",endISO:null,endLabel:"长期（以官网为准）",url:"https://developers.cloudflare.com/workers-ai/",source:"官方页",srcDate:null},
+ {id:"m-hf-img",title:"Hugging Face — 免费调用生图/视频模型",cat:"AI 与订阅",sub:"免费出图出视频",type:"官方免费额度",trust:"list",valueLabel:"每月免费额度",valueNum:0,desc:"Inference Providers 每月赠免费额度，可调用大量开源生图/视频模型，超额按量付费",endISO:null,endLabel:"长期（以官网为准）",url:"https://huggingface.co/inference-api",source:"官方页",srcDate:null},
+ {id:"m-volc-img",title:"火山方舟 — 豆包生图/生视频模型免费额度",cat:"AI 与订阅",sub:"免费出图出视频",type:"官方免费额度",trust:"list",valueLabel:"每模型每日免费额度",valueNum:0,desc:"火山引擎方舟平台，新用户各模型有免费推理额度，含 Seedream 生图与 Seedance 生视频",endISO:null,endLabel:"以官网为准",url:"https://www.volcengine.com/product/ark",source:"官方页",srcDate:null},
+ {id:"m-pexels",title:"Pexels API — 免费图片/视频素材",cat:"AI 与订阅",sub:"免费素材 API",type:"免费素材",trust:"official",valueLabel:"免费 API",valueNum:0,desc:"海量免费版权图片与视频素材 API，自媒体做视频找 B-roll 素材直接调用",endISO:null,endLabel:"长期",url:"https://www.pexels.com/api/",source:"官方页",srcDate:null},
+ {id:"m-pixabay",title:"Pixabay API — 免费图片/视频/音乐素材",cat:"AI 与订阅",sub:"免费素材 API",type:"免费素材",trust:"official",valueLabel:"免费 API",valueNum:0,desc:"免费素材库 API，图片、视频、音乐都有，做短视频和图文号常用",endISO:null,endLabel:"长期",url:"https://pixabay.com/api/docs/",source:"官方页",srcDate:null},
+ {id:"m-unsplash",title:"Unsplash API — 免费高质量图片素材",cat:"AI 与订阅",sub:"免费素材 API",type:"免费素材",trust:"official",valueLabel:"免费 API（演示额度）",valueNum:0,desc:"高质量摄影图库 API，图文内容配图常用，演示模式每小时 50 次请求",endISO:null,endLabel:"长期",url:"https://unsplash.com/developers",source:"官方页",srcDate:null}
+];
+
 const RSS_FEEDS=[
  {prefix:"oz", url:"https://www.ozbargain.com.au/deals/feed", cat:"全球购物羊毛", sub:"澳洲社区", type:"社区爆料", region:"澳大利亚", source:"OzBargain 社区", cap:30, fallback:"OzBargain 社区最新爆料"},
  {prefix:"v2ex", url:"https://www.v2ex.com/index.xml", cat:"科技情报", sub:"中文社区", type:"社区爆料", region:"中文社区", source:"V2EX 社区", cap:20, keywords:/免费|优惠|折扣|促销|羊毛|赠送|领取|白嫖|0\s?元|free|deal/i, fallback:"V2EX 社区优惠相关帖子"},
@@ -124,22 +137,27 @@ async function fetchTelegramChannel(ch, label){
 
 async function fetchGitHub(){
   const queries=[
+    ["topic:llm-gateway","AI 网关/中转","stars"],
+    ["one-api in:name","AI 中转/网关","stars"],
+    ["MoneyPrinter in:name","自媒体工具","stars","GitHub 开源"],
+    ["topic:short-video","自媒体工具","stars","GitHub 开源"],
+    ["side-hustle in:name,description","搞钱电子书与指南","stars","免费搞钱"],
+    ["副业赚钱 in:name,description","搞钱电子书与指南","stars","免费搞钱"],
+    ["text-to-image api in:name,description stars:>100","出图/视频项目","stars","GitHub 开源"],
+    ["free-llm-api in:name,description","免费 LLM 清单","stars"],
     ["topic:free-tier","免费层项目","updated"],
     ["topic:free-api","免费 API 项目","updated"],
     ["topic:freebies","免费好物","updated"],
     ["free tier in:description stars:>100","热门免费层","updated"],
-    ["awesome free apis in:name,description","Awesome 清单","updated"],
-    ["topic:llm-gateway","AI 网关/中转","stars"],
-    ["one-api in:name","AI 中转/网关","stars"],
-    ["free-llm-api in:name,description","免费 LLM 清单","stars"]
+    ["awesome free apis in:name,description","Awesome 清单","updated"]
   ];
   const out=[]; const seen=new Set();
-  for(const [q,qlabel,qsort] of queries){
+  for(const [q,qlabel,qsort,qcat] of queries){
     let j=null;
     try{ j=await fetchJSON("https://api.github.com/search/repositories?q="+encodeURIComponent(q)+"&sort="+(qsort||"updated")+"&order=desc&per_page=20"); }catch(e){ continue; }
     for(const r of (j.items||[])){
       if(seen.has(r.full_name)) continue; seen.add(r.full_name);
-      out.push({id:"gh-"+r.id, title:r.full_name, cat:"GitHub 开源", sub:qlabel, type:"开源项目", trust:"list", valueLabel:"★ "+r.stargazers_count, valueNum:r.stargazers_count||0, desc:(r.description||"GitHub 最新免费/免费层相关开源项目").slice(0,220), endISO:null, endLabel:"开源项目", url:r.html_url, source:"GitHub Search · "+(r.language||""), srcDate:(r.pushed_at||"").slice(0,10)||null, stars:r.stargazers_count||0});
+      out.push({id:"gh-"+r.id, title:r.full_name, cat:qcat||"GitHub 开源", sub:qlabel, type:"开源项目", trust:"list", valueLabel:"★ "+r.stargazers_count, valueNum:r.stargazers_count||0, desc:(r.description||"GitHub 最新免费/免费层相关开源项目").slice(0,220), endISO:null, endLabel:"开源项目", url:r.html_url, source:"GitHub Search · "+(r.language||""), srcDate:(r.pushed_at||"").slice(0,10)||null, stars:r.stargazers_count||0});
     }
   }
   return out;
@@ -199,8 +217,8 @@ function parseAwesomeFreeLLM(text){
 }
 
 async function refresh(env){
-  const counts={seed:SEED.length, freeForDev:0, publicApis:0, github:0, rss:0, hackerNews:0, telegram:0, relayNav:0, freeLlm:0};
-  const errors=[]; let items=[...SEED];
+  const counts={seed:SEED.length+SEED_MEDIA.length, freeForDev:0, publicApis:0, github:0, rss:0, hackerNews:0, telegram:0, relayNav:0, freeLlm:0};
+  const errors=[]; let items=[...SEED, ...SEED_MEDIA];
   try{ const t=await fetchText("https://raw.githubusercontent.com/ripienaar/free-for-dev/master/README.md"); const p=parseFreeForDev(t); counts.freeForDev=p.length; items=items.concat(p); }catch(e){ errors.push("free-for-dev: "+e.message); }
   try{ const t=await fetchText("https://raw.githubusercontent.com/public-apis/public-apis/master/README.md"); const p=parsePublicApis(t); counts.publicApis=p.length; items=items.concat(p); }catch(e){ errors.push("public-apis: "+e.message); }
   try{ const p=await fetchGitHub(); counts.github=p.length; items=items.concat(p); }catch(e){ errors.push("github: "+e.message); }
@@ -244,10 +262,12 @@ function html(){
   const res = JSON.stringify(RES).replace(/</g,"\\u003c");
   return `<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GLOBAL DEAL HUB | 全球羊毛情报中心</title>
+<script>try{var th=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=th;}catch(e){document.documentElement.dataset.theme='light'}<\/script>
 <style>
-:root{--ink:#221e16;--mut:#7a7261;--gold:#9a7b2d;--line:#ded2b8;--paper:#f6f1e6;--card:#fffdf6}
+:root{--ink:#221e16;--mut:#7a7261;--gold:#9a7b2d;--line:#ded2b8;--paper:#f6f1e6;--card:#fffdf6;--desc:#4c463a;--btnbg:#221e16;--btnfg:#f6f1e6}
+html[data-theme="dark"]{--ink:#ede4cf;--mut:#a79b7d;--gold:#c9a44e;--line:#3d3626;--paper:#14120d;--card:#1d1a13;--desc:#cfc4a8;--btnbg:#c9a44e;--btnfg:#171410}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;transition:background .25s,color .25s}
 .serif{font-family:Georgia,"Times New Roman","Songti SC","Noto Serif SC",serif}
 .wrap{max-width:1060px;margin:0 auto;padding:34px 18px 64px}
 .kicker{text-align:center;letter-spacing:.42em;font-size:11px;color:var(--gold);text-transform:uppercase}
@@ -260,41 +280,43 @@ h1{text-align:center;font-size:40px;margin:10px 0 2px;font-weight:600;letter-spa
 .stat{text-align:center;padding:16px 6px}.stat+.stat{border-left:1px solid var(--line)}
 .stat b{display:block;font-size:32px;font-weight:600}.stat span{font-size:12px;color:var(--mut);letter-spacing:.28em}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:18px}
-.btn{background:var(--ink);color:#f6f1e6;border:1px solid var(--ink);padding:11px 20px;cursor:pointer;font-size:13.5px;letter-spacing:.12em}
+.btn{background:var(--btnbg);color:var(--btnfg);border:1px solid var(--btnbg);padding:11px 20px;cursor:pointer;font-size:13.5px;letter-spacing:.12em}
 .btn2{background:transparent;color:var(--ink);border:1px solid var(--line);padding:10px 16px;cursor:pointer;font-size:13.5px;letter-spacing:.08em}
-.btn2.on{background:var(--ink);color:#f6f1e6;border-color:var(--ink)}
+.btn2.on{background:var(--btnbg);color:var(--btnfg);border-color:var(--btnbg)}
 .btn2:disabled{opacity:.35;cursor:default}
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0 0}
 .chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:13px}
-.chip.on{background:var(--ink);color:#f6f1e6;border-color:var(--ink)}
+.chip.on{background:var(--btnbg);color:var(--btnfg);border-color:var(--btnbg)}
 .subs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 0}
 .schip{border:1px solid transparent;background:transparent;color:var(--gold);border-radius:999px;padding:4px 11px;cursor:pointer;font-size:12.5px}
-.schip.on{border-color:var(--gold);background:#fffdf6}
+.schip.on{border-color:var(--gold);background:var(--card)}
 input,select{background:var(--card);color:var(--ink);border:1px solid var(--line);padding:11px 13px;font-size:14px;border-radius:2px}
 input{flex:1;min-width:220px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
 @media(max-width:760px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:30px}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:18px}
 .card h3{margin:9px 0 6px;font-size:16.5px;font-weight:600;line-height:1.45}
-.tag{display:inline-block;border:1px solid var(--ink);background:var(--ink);color:#f6f1e6;padding:2px 8px;margin-right:6px;font-size:11.5px;letter-spacing:.06em}
+.tag{display:inline-block;border:1px solid var(--btnbg);background:var(--btnbg);color:var(--btnfg);padding:2px 8px;margin-right:6px;font-size:11.5px;letter-spacing:.06em}
 .stag{display:inline-block;color:var(--gold);border:1px solid var(--gold);padding:2px 8px;margin-right:6px;font-size:11.5px}
-.wtag{display:inline-block;color:#8a6d1f;border:1px dashed #b89b4e;padding:2px 8px;margin-right:6px;font-size:11.5px}
+.wtag{display:inline-block;color:var(--gold);border:1px dashed var(--gold);padding:2px 8px;margin-right:6px;font-size:11.5px}
 .ptag{display:inline-block;color:var(--mut);border:1px solid var(--line);padding:2px 8px;margin-right:6px;font-size:11.5px}
-.desc{color:#4c463a;font-size:13.5px;line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:4px 0}
+.desc{color:var(--desc);font-size:13.5px;line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:4px 0}
 .mut{color:var(--mut);font-size:12.5px;line-height:1.7;margin:3px 0}
 a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .foot{color:var(--mut);font-size:12.5px;line-height:1.8;margin-top:30px;border-top:1px solid var(--line);padding-top:16px}
 </style></head><body><div class="wrap">
-<p class="kicker">Worldwide Free Signals · Est. 2026</p>
+<p class="kicker" id="kicker">Worldwide Free Signals · Est. 2026</p>
 <h1 class="serif">GLOBAL DEAL HUB</h1>
-<p class="sub">全 球 羊 毛 情 报 中 心</p>
+<p class="sub" id="subtitle">全 球 羊 毛 情 报 中 心</p>
 <div class="rule"></div><div class="rule2"></div>
 <p class="meta" id="metaLine">正在加载数据…</p>
-<div class="stats"><div class="stat"><b class="serif" id="sTotal">–</b><span>进 行 中</span></div><div class="stat"><b class="serif" id="sToday">–</b><span>今 日 更 新</span></div><div class="stat"><b class="serif" id="sSoon">–</b><span>七 日 内 截 止</span></div><div class="stat"><b class="serif" id="sPending">–</b><span>待 核 实</span></div></div>
+<div class="stats"><div class="stat"><b class="serif" id="sTotal">–</b><span id="stTotal">进 行 中</span></div><div class="stat"><b class="serif" id="sToday">–</b><span id="stToday">今 日 更 新</span></div><div class="stat"><b class="serif" id="sSoon">–</b><span id="stSoon">七 日 内 截 止</span></div><div class="stat"><b class="serif" id="sPending">–</b><span id="stPending">待 核 实</span></div></div>
 <div class="row">
 <button class="btn" id="btnRefresh">立即自动抓取最新</button>
 <button class="btn2 on" id="tabDeals">优惠情报</button>
 <button class="btn2" id="tabRes">免费算力组合</button>
+<button class="btn2" id="btnTheme">深色</button>
+<button class="btn2" id="btnLang">EN</button>
 </div>
 <div id="viewDeals">
 <div class="chips" id="chips"></div>
@@ -304,32 +326,43 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 <div id="pager" style="text-align:center;margin-top:20px"></div>
 </div>
 <div id="viewRes" style="display:none"><div class="grid" id="res"></div>
-<p class="foot">规则：只用免费计划，不绑卡、不升级、不付费。遇登录、授权、验证码、密码立即停下由你接管；每项先实际验证可用再进入下一项。状态为信息整理，不代表已开通。</p></div>
-<p class="foot">数据来源：人工核实种子（官方页）· free-for-dev 社区清单 · public-apis 免费 API 目录 · GitHub Search 最新项目 · Slickdeals（美国）· OzBargain（澳洲）· Doctor of Credit（银行与卡奖励）· Frequent Miler（里程积分）· Airdrops.io（加密空投）· Giveaway of the Day（每日免费软件）· Hacker News · V2EX（关键词过滤）· Telegram GrabFreeGames（免费游戏）· free-newapi 中转站导航（官方免费额度 + 公益中转站 + 自建工具）· awesome-free-llm-apis（永久免费 LLM API 清单）。公益中转站由社区维护，存在掺水/跑路风险：只建议注册领免费额度试用，勿传敏感数据、勿大额充值；公开共享 Key 类渠道不收录。系统每 2 小时自动抓取，过期自动归档。Pepper 系（mydealz / hotukdeals / dealabs）与 Reddit 服务端抓取被对方拒绝，未接入。社区爆料时效以原帖为准，请以官方页核实后参与。</p>
+<p class="foot" id="footRes"></p></div>
+<p class="foot" id="footMain"></p>
 </div><script>
 const RES=${res};
+const I18N={
+ zh:{loading:'正在加载数据…',active:'进 行 中',today:'今 日 更 新',soon:'七 日 内 截 止',pending:'待 核 实',refresh:'立即自动抓取最新',fetching:'抓取中…',deals:'优惠情报',compute:'免费算力组合',themeTo:'深色',themeBack:'浅色',langBtn:'EN',subtitle:'全 球 羊 毛 情 报 中 心',searchPh:'搜索：Gemini、免费 API、银行奖励、空投、免费游戏…',sortNew:'最新更新',sortHot:'热度最高',sortEnd:'即将截止',official:'官方核实',listed:'清单收录',community:'社区爆料',unverified:'待核实',value:'价值/规格',deadline:'截止',updated:'更新',source:'来源',visit:'前往官方 / 原帖 →',empty:'暂无符合条件的条目',first:'首页',prev:'上一页',next:'下一页',last:'末页',pageInfo:function(t,p,q,n){return '共 '+t+' 条 · 第 '+p+' / '+q+' 页 · 每页 '+n+' 条'},lastUpdate:'上次自动更新',totalW:'共',someFail:'部分来源失败',loadFail:'加载失败，请稍后刷新页面重试',resRule:'规则：只用免费计划，不绑卡、不升级、不付费。遇登录、授权、验证码、密码立即停下由你接管；每项先实际验证可用再进入下一项。状态为信息整理，不代表已开通。',foot:'数据来源：人工核实种子（官方页）· free-for-dev · public-apis · GitHub Search（含 AI 网关/中转、自媒体工具、搞钱电子书）· Slickdeals · OzBargain · Doctor of Credit · Frequent Miler · Airdrops.io · Giveaway of the Day · Hacker News · V2EX · Telegram 免费游戏 · free-newapi 中转站导航 · awesome-free-llm-apis · 官方免费出图/视频与素材 API。系统每 2 小时自动抓取，过期自动归档。公益中转站由社区维护，存在掺水/跑路风险：只建议注册领免费额度试用，勿传敏感数据、勿大额充值；公开共享 Key 类渠道不收录。所有卡片均可点击直达来源页。'},
+ en:{loading:'Loading…',active:'A C T I V E',today:'U P D A T E D · T O D A Y',soon:'E N D I N G · 7 D',pending:'U N V E R I F I E D',refresh:'Fetch latest now',fetching:'Fetching…',deals:'Deals',compute:'Free compute',themeTo:'Dark',themeBack:'Light',langBtn:'中文',subtitle:'G L O B A L · D E A L · I N T E L',searchPh:'Search: Gemini, free API, bank bonuses, airdrops, free games…',sortNew:'Newest',sortHot:'Most popular',sortEnd:'Ending soon',official:'Official',listed:'Listed',community:'Community',unverified:'Unverified',value:'Value',deadline:'Ends',updated:'Updated',source:'Source',visit:'Visit source →',empty:'No matching items',first:'First',prev:'Prev',next:'Next',last:'Last',pageInfo:function(t,p,q,n){return t+' items · Page '+p+' / '+q+' · '+n+' per page'},lastUpdate:'Last auto-update',totalW:'total',someFail:'Some sources failed',loadFail:'Load failed, please refresh later',resRule:'Rules: free plans only — no card binding, no upgrades, no payments. Stop at any login, authorization, captcha or password step and hand over to the owner; verify each resource actually works before moving on. Statuses are informational, not activations.',foot:'Sources: hand-verified seeds (official pages) · free-for-dev · public-apis · GitHub Search (incl. AI gateways/relays, creator tools, money ebooks) · Slickdeals · OzBargain · Doctor of Credit · Frequent Miler · Airdrops.io · Giveaway of the Day · Hacker News · V2EX · Telegram free games · free-newapi relay index · awesome-free-llm-apis · official free image/video & stock APIs. Auto-refreshed every 2 hours; expired deals are archived automatically. Community relays may shut down or degrade: use free quotas only, never send sensitive data or deposit large sums. Shared public key channels are not listed. Every card links directly to its source.'}
+};
+const CAT_EN={'全部':'All','即将截止':'Ending soon','已结束':'Ended','我的收藏':'Favorites','AI 与订阅':'AI & Subscriptions','云与开发':'Cloud & Dev','免费 API':'Free APIs','GitHub 开源':'GitHub Open Source','全球购物羊毛':'Global Shopping','免费搞钱':'Free Money','免费软件游戏':'Free Software & Games','科技情报':'Tech Intel'};
+const SUB_EN={'全部小类':'All subcategories','免费 AI API 渠道':'Free AI API channels','公益中转站':'Community relays','免费出图出视频':'Free image/video APIs','免费素材 API':'Free stock APIs','自媒体工具':'Creator tools','搞钱电子书与指南':'Money ebooks & guides','银行与卡奖励':'Bank & card bonuses','里程积分':'Miles & points','加密空投':'Crypto airdrops','交易所活动':'Exchange promos','美国社区':'US community','澳洲社区':'AU community','每日免费软件':'Daily free software','免费游戏':'Free games','中文社区':'Chinese community','学生优惠':'Student deals','办公订阅':'Productivity subs','定向优惠':'Targeted deals','云厂商免费层':'Cloud free tiers','AI 网关/中转':'AI gateways','AI 中转/网关':'AI gateways & relays','免费 LLM 清单':'Free LLM lists','出图/视频项目':'Image/video projects'};
+let lang=localStorage.getItem('lang')||'zh';
+let theme=document.documentElement.dataset.theme||'light';
+function T(){return I18N[lang]}
+function L(c){return lang==='en'?(CAT_EN[c]||c):c}
+function SL(x){return lang==='en'?(SUB_EN[x]||x):x}
 let deals=[], meta=null, filter='全部', subFilter='全部小类', page=1; const PAGE_SIZE=24;
 let favs=new Set(JSON.parse(localStorage.getItem('favs')||'[]'));
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function trustTag(d){return d.trust==='official'?'<span class="ptag">官方核实</span>':d.trust==='list'?'<span class="ptag">清单收录</span>':d.trust==='community'?'<span class="ptag">社区爆料</span>':'<span class="wtag">待核实</span>'}
+function trustTag(d){const t=T();return d.trust==='official'?'<span class="ptag">'+t.official+'</span>':d.trust==='list'?'<span class="ptag">'+t.listed+'</span>':d.trust==='community'?'<span class="ptag">'+t.community+'</span>':'<span class="wtag">'+t.unverified+'</span>'}
 function catCounts(){const m={};deals.filter(d=>!d.ended).forEach(d=>{m[d.cat]=(m[d.cat]||0)+1});return Object.keys(m).sort((a,b)=>m[b]-m[a]).map(c=>[c,m[c]])}
 function subCounts(){if(filter==='全部'||filter==='即将截止'||filter==='已结束'||filter==='我的收藏')return[];const m={};deals.filter(d=>!d.ended&&d.cat===filter&&d.sub).forEach(d=>{m[d.sub]=(m[d.sub]||0)+1});return Object.keys(m).sort((a,b)=>m[b]-m[a]).map(c=>[c,m[c]])}
 function renderChips(){const base=['全部','即将截止','已结束','我的收藏'];const cc=catCounts();
- document.getElementById('chips').innerHTML=base.concat(cc.map(x=>x[0])).map(c=>{let n='';if(c==='我的收藏')n=' ('+favs.size+')';else{const f=cc.find(x=>x[0]===c);if(f)n=' ('+f[1]+')'}return '<button class="chip '+(filter===c?'on':'')+'" onclick="setF(\\''+c.replace(/'/g,"")+'\\')">'+esc(c)+n+'</button>'}).join('');
+ document.getElementById('chips').innerHTML=base.concat(cc.map(x=>x[0])).map(c=>{let n='';if(c==='我的收藏')n=' ('+favs.size+')';else{const f=cc.find(x=>x[0]===c);if(f)n=' ('+f[1]+')'}return '<button class="chip '+(filter===c?'on':'')+'" onclick="setF(\\''+c.replace(/'/g,"")+'\\')">'+esc(L(c))+n+'</button>'}).join('');
  const sc=subCounts();
- document.getElementById('subs').innerHTML=sc.length?['全部小类'].concat(sc.map(x=>x[0])).map(c=>{const f=sc.find(x=>x[0]===c);return '<button class="schip '+(subFilter===c?'on':'')+'" onclick="setSub(\\''+c.replace(/'/g,"")+'\\')">'+esc(c)+(f?' ('+f[1]+')':'')+'</button>'}).join(''):'';
+ document.getElementById('subs').innerHTML=sc.length?['全部小类'].concat(sc.map(x=>x[0])).map(c=>{const f=sc.find(x=>x[0]===c);return '<button class="schip '+(subFilter===c?'on':'')+'" onclick="setSub(\\''+c.replace(/'/g,"")+'\\')">'+esc(SL(c))+(f?' ('+f[1]+')':'')+'</button>'}).join(''):'';
 }
 function setF(c){filter=c;subFilter='全部小类';page=1;render()}
 function setSub(x){subFilter=x;page=1;render()}
 function soon7(d){return d.endISO && !d.ended && (new Date(d.endISO).getTime()-Date.now())<7*864e5}
 function render(){
- const today=new Date().toISOString().slice(0,10);
+ const t=T(); const today=new Date().toISOString().slice(0,10);
  const active=deals.filter(d=>!d.ended);
  sTotal.textContent=active.length;
  sToday.textContent=deals.filter(d=>d.srcDate===today).length;
  sSoon.textContent=deals.filter(soon7).length;
  sPending.textContent=active.filter(d=>d.trust==='unverified').length;
- if(meta){const names={seed:'人工核实',freeForDev:'free-for-dev',publicApis:'public-apis',github:'GitHub',rss:'全球社区',hackerNews:'Hacker News',telegram:'Telegram',relayNav:'中转站导航',freeLlm:'免费LLM清单'};metaLine.textContent='上次自动更新：'+new Date(meta.updatedAt).toLocaleString('zh-CN')+' · 共 '+meta.total+' 条 · '+Object.keys(meta.counts).map(k=>(names[k]||k)+' '+meta.counts[k]).join(' · ')+(meta.errors&&meta.errors.length?' · 部分来源失败：'+meta.errors.join('；'):'')}
+ if(meta){const names={seed:'人工核实',freeForDev:'free-for-dev',publicApis:'public-apis',github:'GitHub',rss:'全球社区',hackerNews:'Hacker News',telegram:'Telegram',relayNav:'中转站导航',freeLlm:'免费LLM清单'};metaLine.textContent=t.lastUpdate+'：'+new Date(meta.updatedAt).toLocaleString(lang==='en'?'en-US':'zh-CN')+' · '+t.totalW+' '+meta.total+(lang==='en'?' items':' 条')+' · '+Object.keys(meta.counts).map(k=>(names[k]||k)+' '+meta.counts[k]).join(' · ')+(meta.errors&&meta.errors.length?' · '+t.someFail+'：'+meta.errors.join('；'):'')}
  renderChips();
  let q=document.getElementById('q').value.toLowerCase();
  let arr=deals.filter(d=>{
@@ -347,32 +380,48 @@ function render(){
  else arr.sort((a,b)=>String(b.srcDate||'').localeCompare(String(a.srcDate||''))||(b.valueNum||0)-(a.valueNum||0));
  const pages=Math.max(1,Math.ceil(arr.length/PAGE_SIZE)); if(page>pages)page=pages;
  const pageItems=arr.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);
- document.getElementById('list').innerHTML=pageItems.map(d=>'<div class="card"><span class="tag">'+esc(d.cat)+'</span>'+(d.sub?'<span class="stag">'+esc(d.sub)+'</span>':'')+'<span class="ptag">'+esc(d.type)+'</span>'+trustTag(d)+' <a href="#" onclick="toggleFav(\\''+d.id+'\\');return false" style="float:right">'+(favs.has(d.id)?'★':'☆')+'</a><h3>'+esc(d.title)+'</h3><p class="desc">'+esc(d.desc||'')+'</p><p class="mut">价值/规格：'+esc(d.valueLabel||'—')+' · 截止：'+esc(d.endLabel||'长期')+(d.srcDate?' · 更新：'+esc(d.srcDate):'')+'</p><p class="mut">来源：'+esc(d.source)+'</p><a href="'+esc(d.url)+'" target="_blank" rel="noopener">前往官方 / 原帖 →</a></div>').join('')||'<p class="mut" style="text-align:center">暂无符合条件的条目</p>';
+ document.getElementById('list').innerHTML=pageItems.map(d=>'<div class="card"><span class="tag">'+esc(L(d.cat))+'</span>'+(d.sub?'<span class="stag">'+esc(SL(d.sub))+'</span>':'')+'<span class="ptag">'+esc(d.type)+'</span>'+trustTag(d)+' <a href="#" onclick="toggleFav(\\''+d.id+'\\');return false" style="float:right">'+(favs.has(d.id)?'★':'☆')+'</a><h3>'+esc(d.title)+'</h3><p class="desc">'+esc(d.desc||'')+'</p><p class="mut">'+t.value+'：'+esc(d.valueLabel||'—')+' · '+t.deadline+'：'+esc(d.endLabel||'—')+(d.srcDate?' · '+t.updated+'：'+esc(d.srcDate):'')+'</p><p class="mut">'+t.source+'：'+esc(d.source)+'</p><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+t.visit+'</a></div>').join('')||'<p class="mut" style="text-align:center">'+t.empty+'</p>';
  renderPager(arr.length,pages);
 }
 function renderPager(total,pages){
- const el=document.getElementById('pager'); if(!el)return;
+ const t=T(); const el=document.getElementById('pager'); if(!el)return;
  if(total===0){el.innerHTML='';return}
  let nums=[]; for(let i=1;i<=pages;i++){ if(i===1||i===pages||Math.abs(i-page)<=2) nums.push(i); }
- let html='<button class="btn2" onclick="goPage(1)" '+(page===1?'disabled':'')+'>首页</button> <button class="btn2" onclick="goPage(page-1)" '+(page===1?'disabled':'')+'>上一页</button> ';
+ let html='<button class="btn2" onclick="goPage(1)" '+(page===1?'disabled':'')+'>'+t.first+'</button> <button class="btn2" onclick="goPage(page-1)" '+(page===1?'disabled':'')+'>'+t.prev+'</button> ';
  let last=0; for(const n of nums){ if(last&&n-last>1) html+='<span class="mut">…</span> '; html+='<button class="btn2 '+(n===page?'on':'')+'" onclick="goPage('+n+')">'+n+'</button> '; last=n; }
- html+='<button class="btn2" onclick="goPage(page+1)" '+(page===pages?'disabled':'')+'>下一页</button> <button class="btn2" onclick="goPage('+pages+')" '+(page===pages?'disabled':'')+'>末页</button>';
- html+='<p class="mut" style="margin-top:9px">共 '+total+' 条 · 第 '+page+' / '+pages+' 页 · 每页 '+PAGE_SIZE+' 条</p>';
+ html+='<button class="btn2" onclick="goPage(page+1)" '+(page===pages?'disabled':'')+'>'+t.next+'</button> <button class="btn2" onclick="goPage('+pages+')" '+(page===pages?'disabled':'')+'>'+t.last+'</button>';
+ html+='<p class="mut" style="margin-top:9px">'+t.pageInfo(total,page,pages,PAGE_SIZE)+'</p>';
  el.innerHTML=html;
 }
 function goPage(n){page=n;render();window.scrollTo({top:0,behavior:'smooth'})}
 function toggleFav(id){favs.has(id)?favs.delete(id):favs.add(id);localStorage.setItem('favs',JSON.stringify([...favs]));render()}
-async function load(force){
- document.getElementById('btnRefresh').textContent='抓取中…';
- try{const r=await fetch(force?'/api/refresh':'/api/deals');const j=await r.json();deals=j.deals||[];meta=j.meta||null;}catch(e){metaLine.textContent='加载失败，请稍后刷新页面重试'}
- document.getElementById('btnRefresh').textContent='立即自动抓取最新';render();
+function applyLang(){
+ const t=T();
+ document.title=lang==='en'?'GLOBAL DEAL HUB | Global Deal Intelligence':'GLOBAL DEAL HUB | 全球羊毛情报中心';
+ subtitle.textContent=t.subtitle;
+ stTotal.textContent=t.active; stToday.textContent=t.today; stSoon.textContent=t.soon; stPending.textContent=t.pending;
+ btnRefresh.textContent=t.refresh; tabDeals.textContent=t.deals; tabRes.textContent=t.compute;
+ btnTheme.textContent=theme==='dark'?t.themeBack:t.themeTo; btnLang.textContent=t.langBtn;
+ document.getElementById('q').placeholder=t.searchPh;
+ const so=document.getElementById('sort').options; so[0].text=t.sortNew; so[1].text=t.sortHot; so[2].text=t.sortEnd;
+ footRes.textContent=t.resRule; footMain.textContent=t.foot;
+ if(!meta) metaLine.textContent=t.loading;
+ render();
 }
-document.getElementById('btnRefresh').onclick=()=>{page=1;load(true)};
+async function load(force){
+ const t=T(); btnRefresh.textContent=t.fetching;
+ try{const r=await fetch(force?'/api/refresh':'/api/deals');const j=await r.json();deals=j.deals||[];meta=j.meta||null;}catch(e){metaLine.textContent=T().loadFail}
+ btnRefresh.textContent=T().refresh; render();
+}
+btnRefresh.onclick=()=>{page=1;load(true)};
 document.getElementById('q').addEventListener('input',()=>{page=1;render()});
 document.getElementById('sort').addEventListener('change',()=>{page=1;render()});
-document.getElementById('tabDeals').onclick=()=>{viewDeals.style.display='';viewRes.style.display='none';tabDeals.classList.add('on');tabRes.classList.remove('on')};
-document.getElementById('tabRes').onclick=()=>{viewDeals.style.display='none';viewRes.style.display='';tabRes.classList.add('on');tabDeals.classList.remove('on')};
+tabDeals.onclick=()=>{viewDeals.style.display='';viewRes.style.display='none';tabDeals.classList.add('on');tabRes.classList.remove('on')};
+tabRes.onclick=()=>{viewDeals.style.display='none';viewRes.style.display='';tabRes.classList.add('on');tabDeals.classList.remove('on')};
+btnTheme.onclick=()=>{theme=theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;localStorage.setItem('theme',theme);applyLang()};
+btnLang.onclick=()=>{lang=lang==='zh'?'en':'zh';localStorage.setItem('lang',lang);applyLang()};
 document.getElementById('res').innerHTML=RES.map(r=>'<div class="card"><span class="wtag">'+esc(r.st)+'</span><h3>'+esc(r.n)+'</h3><p class="desc">'+esc(r.spec)+'</p><p class="mut">验证：'+esc(r.verify)+'</p><p class="mut">注意：'+esc(r.note)+'</p><a href="'+esc(r.url)+'" target="_blank" rel="noopener">官方入口 →</a></div>').join('');
+applyLang();
 load(false);
 </script></body></html>`;
 }
