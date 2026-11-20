@@ -1,4 +1,4 @@
-# 数据来源说明（v6）
+# 数据来源说明（v8）
 
 面板不靠人工添加，全部由 Worker 自动抓取公开来源，存入 KV，每 2 小时更新一次；打开页面时数据超过 2 小时也会自动刷新。过期活动（有明确截止时间且已过）自动归档到「已结束」。
 
@@ -15,7 +15,7 @@
 | Hacker News (Algolia) | 科技情报 | 30 | 全球羊毛 | Algolia 搜索 free tier / free plan / free credits | 社区爆料 |
 | Telegram GrabFreeGames | 免费游戏频道 | 12 | 全球羊毛 | t.me/s 公开预览页解析 | 社区爆料 |
 
-合计约 612 条（去重后）。v6 新增：free-newapi 导航清单 34 条（官方免费额度渠道、公益中转站、自建中转工具）、awesome-free-llm-apis 15 条、GitHub 搜索扩增 AI 网关/中转类查询（GitHub 类总量 145）。公益中转站条目带风险提示，链接已剥离推广参数，付费/疑似跑路条目不收录，公开共享 Key 类渠道不收录。另 v5 新增：Doctor of Credit（银行与卡奖励 15）、Frequent Miler（里程积分 15）、Airdrops.io（加密空投 10）、Slickdeals（美国社区 25）、Giveaway of the Day（每日免费软件 10），归入「免费搞钱 / 全球购物羊毛 / 免费软件游戏」大类。分类为两级：大类（AI 与订阅、云与开发、免费 API、GitHub 开源、全球购物羊毛、免费搞钱、免费软件游戏、科技情报）+ 小类（来源分区/主题）。
+合计约 655 条（去重后）。v7 新增：官方种子补免费出图/视频 API（Pollinations、硅基流动、魔搭、Cloudflare Workers AI、Hugging Face、火山方舟）与免费素材 API（Pexels/Pixabay/Unsplash）；GitHub 扩搜自媒体工具、搞钱电子书与指南、出图/视频项目。v6 新增：free-newapi 导航清单 34 条（官方免费额度渠道、公益中转站、自建中转工具）、awesome-free-llm-apis 15 条、GitHub 搜索扩增 AI 网关/中转类查询（GitHub 类总量 145）。公益中转站条目带风险提示，链接已剥离推广参数，付费/疑似跑路条目不收录，公开共享 Key 类渠道不收录。另 v5 新增：Doctor of Credit（银行与卡奖励 15）、Frequent Miler（里程积分 15）、Airdrops.io（加密空投 10）、Slickdeals（美国社区 25）、Giveaway of the Day（每日免费软件 10），归入「免费搞钱 / 全球购物羊毛 / 免费软件游戏」大类。分类为两级：大类（AI 与订阅、云与开发、免费 API、GitHub 开源、全球购物羊毛、免费搞钱、免费软件游戏、科技情报）+ 小类（来源分区/主题）。
 
 ## 试过但没接入的来源（原因写清楚，不造假）
 
