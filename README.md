@@ -4,7 +4,7 @@
 
 线上 Worker 版（主面板）：https://global-deal-hunter.u20261103.workers.dev/
 
-v5 起品牌更名为 **GLOBAL DEAL HUB**。Worker 为主面板并**全自动更新**：Cron 每 2 小时抓取 12+ 公开来源（人工核实种子、free-for-dev、public-apis、GitHub Search、Slickdeals、OzBargain、Doctor of Credit、Frequent Miler、Airdrops.io、Giveaway of the Day、Hacker News、V2EX、Telegram 免费游戏频道）写入 KV，共 500+ 条；两级分类（大类 + 小类）+ 分页浏览（每页 24 条）；过期自动归档。不再有手动添加，不依赖 Muse Space。来源明细见 docs/SOURCES.md，手把手部署见 docs/DEPLOY.md。
+v6 新增 AI 中转生态：free-newapi 导航（官方免费额度渠道 16 + 公益中转站 14 + 自建工具）、awesome-free-llm-apis 永久免费 LLM 清单（15 家）、GitHub 网关项目扩搜（LiteLLM / New-API / One-API / OmniRoute 等），总量 612 条。品牌为 **GLOBAL DEAL HUB**。Worker 为主面板并**全自动更新**：Cron 每 2 小时抓取 12+ 公开来源（人工核实种子、free-for-dev、public-apis、GitHub Search、Slickdeals、OzBargain、Doctor of Credit、Frequent Miler、Airdrops.io、Giveaway of the Day、Hacker News、V2EX、Telegram 免费游戏频道）写入 KV，共 500+ 条；两级分类（大类 + 小类）+ 分页浏览（每页 24 条）；过期自动归档。不再有手动添加，不依赖 Muse Space。来源明细见 docs/SOURCES.md，手把手部署见 docs/DEPLOY.md。
 
 ## 功能
 
