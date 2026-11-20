@@ -4,7 +4,7 @@
 
 线上 Worker 版（主面板）：https://global-deal-hunter.u20261103.workers.dev/
 
-v8 新增界面开关：中英双语切换 + 明暗双主题（暗色也是深炭金线贵族风），偏好保存在浏览器本地。v7 新增免费出图/视频 API 官方渠道、免费素材 API、GitHub 自媒体工具（MoneyPrinterTurbo 等 39 条）、搞钱电子书与指南（38 条），总量 655 条。v6 新增 AI 中转生态：free-newapi 导航（官方免费额度渠道 16 + 公益中转站 14 + 自建工具）、awesome-free-llm-apis 永久免费 LLM 清单（15 家）、GitHub 网关项目扩搜（LiteLLM / New-API / One-API / OmniRoute 等），总量 612 条。品牌为 **GLOBAL DEAL HUB**。Worker 为主面板并**全自动更新**：Cron 每 2 小时抓取 12+ 公开来源（人工核实种子、free-for-dev、public-apis、GitHub Search、Slickdeals、OzBargain、Doctor of Credit、Frequent Miler、Airdrops.io、Giveaway of the Day、Hacker News、V2EX、Telegram 免费游戏频道）写入 KV，共 500+ 条；两级分类（大类 + 小类）+ 分页浏览（每页 24 条）；过期自动归档。不再有手动添加，不依赖 Muse Space。来源明细见 docs/SOURCES.md，手把手部署见 docs/DEPLOY.md。
+v11 省流模式：Cron 改为每 6 小时、页面过期阈值 6 小时、手动刷新 30 分钟节流、API 边缘缓存 10 分钟，保护 Workers 免费额度。v10 新增 U 卡（RedotPay/Bybit/OKX/Crypto.com/Coinbase/Nexo 官方页）与 6 个 YouTube 羊毛频道（DealMoon 北美省钱君、The Deal Guy、Hip2Save、Slickdeals、Krazy Coupon Lady、老郭种树）。v9 新增 9 个 RSS 源（IT之家/小众软件/异次元/LowEndBox/美国信用卡指南/DansDeals/9to5Toys/SharewareOnSale/freeCodeCamp）+ GamerPower 与 Epic 免费游戏 API，总量 800+ 条。v8 新增界面开关：中英双语切换 + 明暗双主题（暗色也是深炭金线贵族风），偏好保存在浏览器本地。v7 新增免费出图/视频 API 官方渠道、免费素材 API、GitHub 自媒体工具（MoneyPrinterTurbo 等 39 条）、搞钱电子书与指南（38 条），总量 655 条。v6 新增 AI 中转生态：free-newapi 导航（官方免费额度渠道 16 + 公益中转站 14 + 自建工具）、awesome-free-llm-apis 永久免费 LLM 清单（15 家）、GitHub 网关项目扩搜（LiteLLM / New-API / One-API / OmniRoute 等），总量 612 条。品牌为 **GLOBAL DEAL HUB**。Worker 为主面板并**全自动更新**：Cron 每 2 小时抓取 12+ 公开来源（人工核实种子、free-for-dev、public-apis、GitHub Search、Slickdeals、OzBargain、Doctor of Credit、Frequent Miler、Airdrops.io、Giveaway of the Day、Hacker News、V2EX、Telegram 免费游戏频道）写入 KV，共 500+ 条；两级分类（大类 + 小类）+ 分页浏览（每页 24 条）；过期自动归档。不再有手动添加，不依赖 Muse Space。来源明细见 docs/SOURCES.md，手把手部署见 docs/DEPLOY.md。
 
 ## 功能
 
