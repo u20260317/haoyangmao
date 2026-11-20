@@ -2,6 +2,8 @@
 
 Worker 名称：`global-deal-hunter`
 入口文件：`worker/worker.js`
+KV 绑定：`DEALS_KV`（namespace 标题 `global-deal-hunter-deals`）
+Cron：`7 */2 * * *`（每 2 小时自动抓取，UTC）
 线上地址：https://global-deal-hunter.u20261103.workers.dev/
 
 ## 前置条件
@@ -18,7 +20,9 @@ Worker 名称：`global-deal-hunter`
    `PUT https://api.cloudflare.com/client/v4/accounts/{account_id}/workers/scripts/global-deal-hunter`
    - metadata: `{"main_module":"worker.js","compatibility_date":"2024-11-01"}`
 4. 启用 workers.dev：`POST .../workers/scripts/global-deal-hunter/subdomain`，body `{"enabled":true}`
-5. 验证：打开线上地址，检查首页和 `/api/deals` 是否正常返回。
+5. 创建 KV：`POST /accounts/{account_id}/storage/kv/namespaces`，部署 metadata 里加 bindings `[{type:kv_namespace,name:DEALS_KV,namespace_id}]`。
+6. 设置 Cron：`PUT /accounts/{account_id}/workers/scripts/global-deal-hunter/schedules`，body `[{"cron":"7 */2 * * *"}]`。
+7. 验证：打开线上地址，检查首页和 `/api/deals` 是否正常返回；`/api/refresh` 可强制立即抓取一次。
 
 ## 回滚
 
