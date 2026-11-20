@@ -86,7 +86,16 @@ function parseRSS(xml, cfg){
   }
   return out;
 }
-const TG_CHANNELS=[["GrabFreeGames","GrabFreeGames · 免费游戏"]];
+const TG_CHANNELS=[["GrabFreeGames","GrabFreeGames · 免费游戏"],["freegames","freegames · 免费游戏"]];
+
+const SEED_UCARD=[
+ {id:"u-redotpay",title:"RedotPay — USDT 虚拟/实体支付卡",cat:"免费搞钱",sub:"U 卡 · 加密支付卡",type:"加密支付卡",trust:"official",valueLabel:"开卡活动以官网为准",valueNum:0,desc:"香港团队的加密支付卡，支持 USDT 消费，常有免开卡费/返现活动；需 KYC，部分国家和地区受限",endISO:null,endLabel:"长期（以官网为准）",url:"https://www.redotpay.com",source:"官方页",srcDate:null},
+ {id:"u-bybit",title:"Bybit Card — 交易所官方加密支付卡",cat:"免费搞钱",sub:"U 卡 · 加密支付卡",type:"加密支付卡",trust:"official",valueLabel:"返现活动以官网为准",valueNum:0,desc:"Bybit 官方 Mastercard，可绑 Apple Pay/Google Pay；开放地区与开卡奖励以官网为准，需 KYC",endISO:null,endLabel:"长期（以官网为准）",url:"https://www.bybit.com/cards",source:"官方页",srcDate:null},
+ {id:"u-okx",title:"OKX Card — OKX 加密支付卡",cat:"免费搞钱",sub:"U 卡 · 加密支付卡",type:"加密支付卡",trust:"official",valueLabel:"以官网为准",valueNum:0,desc:"OKX 官方支付卡（目前以欧洲经济区等地区为主），消费返现与费用以官网为准，需 KYC",endISO:null,endLabel:"长期（以官网为准）",url:"https://www.okx.com/card",source:"官方页",srcDate:null},
+ {id:"u-cryptocom",title:"Crypto.com Visa Card — 基础档免年费",cat:"免费搞钱",sub:"U 卡 · 加密支付卡",type:"加密支付卡",trust:"official",valueLabel:"基础档免年费",valueNum:0,desc:"老牌加密 Visa 卡，Midnight Blue 基础档免年费；高档需质押 CRO，返现与开放地区以官网为准",endISO:null,endLabel:"长期（以官网为准）",url:"https://crypto.com/cards",source:"官方页",srcDate:null},
+ {id:"u-coinbase",title:"Coinbase Card — 美国加密借记卡",cat:"免费搞钱",sub:"U 卡 · 加密支付卡",type:"加密支付卡",trust:"official",valueLabel:"以官网为准",valueNum:0,desc:"Coinbase 官方 Visa 借记卡，主要面向美国用户，消费可得加密返现；需 KYC 与地区资格",endISO:null,endLabel:"长期（以官网为准）",url:"https://www.coinbase.com/card",source:"官方页",srcDate:null},
+ {id:"u-nexo",title:"Nexo Card — 欧洲加密信用卡",cat:"免费搞钱",sub:"U 卡 · 加密支付卡",type:"加密支付卡",trust:"official",valueLabel:"以官网为准",valueNum:0,desc:"Nexo 官方 Mastercard，以加密资产抵押消费，主要面向欧洲用户；费用与返现以官网为准，需 KYC",endISO:null,endLabel:"长期（以官网为准）",url:"https://nexo.com/nexo-card",source:"官方页",srcDate:null}
+];
 
 const SEED_MEDIA=[
  {id:"m-pollinations",title:"Pollinations — 免费出图 API（免 Key）",cat:"AI 与订阅",sub:"免费出图出视频",type:"官方免费额度",trust:"official",valueLabel:"免费 · 免注册",valueNum:0,desc:"开源免费生成 API：文本/图片生成可直接通过 URL 调用，匿名可用，自媒体配图神器",endISO:null,endLabel:"长期（以官网为准）",url:"https://pollinations.ai",source:"官方页",srcDate:null},
@@ -107,11 +116,26 @@ const RSS_FEEDS=[
  {prefix:"fm", url:"https://frequentmiler.com/feed/", cat:"免费搞钱", sub:"里程积分", type:"社区爆料", region:"美国", source:"Frequent Miler", cap:15, fallback:"里程与积分优惠情报"},
  {prefix:"air", url:"https://airdrops.io/feed/", cat:"免费搞钱", sub:"加密空投", type:"空投清单", region:"全球", source:"Airdrops.io", cap:10, fallback:"最新加密空投清单"},
  {prefix:"sd", url:"https://slickdeals.net/newsearch.php?mode=frontpage&searcharea=deals&searchin=first&rss=1", cat:"全球购物羊毛", sub:"美国社区", type:"社区爆料", region:"美国", source:"Slickdeals", cap:25, fallback:"Slickdeals 首页热门优惠"},
- {prefix:"gotd", url:"https://www.giveawayoftheday.com/feed/", cat:"免费软件游戏", sub:"每日免费软件", type:"限时免费", region:"全球", source:"Giveaway of the Day", cap:10, fallback:"每日限时免费正版软件"}
+ {prefix:"gotd", url:"https://www.giveawayoftheday.com/feed/", cat:"免费软件游戏", sub:"每日免费软件", type:"限时免费", region:"全球", source:"Giveaway of the Day", cap:10, fallback:"每日限时免费正版软件"},
+ {prefix:"ithome", url:"https://www.ithome.com/rss/", cat:"科技情报", sub:"中文社区", type:"社区爆料", region:"中文社区", source:"IT之家", cap:12, keywords:/免费|优惠|折扣|限免|促销|降价|秒杀|赠送|领取/, fallback:"IT之家优惠相关资讯"},
+ {prefix:"appinn", url:"https://www.appinn.com/feed/", cat:"免费软件游戏", sub:"软件发现", type:"社区爆料", region:"中文社区", source:"小众软件", cap:10, keywords:/免费|限免|优惠|折扣|赠送|正版/, fallback:"小众软件的免费/限免软件发现"},
+ {prefix:"iplay", url:"https://www.iplaysoft.com/feed", cat:"免费软件游戏", sub:"软件发现", type:"社区爆料", region:"中文社区", source:"异次元软件世界", cap:12, keywords:/免费|限免|优惠|折扣|赠送|正版/, fallback:"异次元软件世界的免费/限免软件资讯"},
+ {prefix:"leb", url:"https://lowendbox.com/feed/", cat:"云与开发", sub:"VPS 特价", type:"商家特价", region:"全球", source:"LowEndBox", cap:15, fallback:"LowEndBox 最新 VPS 特价"},
+ {prefix:"uccg", url:"https://www.uscreditcardguide.com/feed/", cat:"免费搞钱", sub:"银行与卡奖励", type:"社区爆料", region:"美国", source:"美国信用卡指南", cap:10, fallback:"美国信用卡与银行奖励中文指南"},
+ {prefix:"dans", url:"https://www.dansdeals.com/feed/", cat:"全球购物羊毛", sub:"美国社区", type:"社区爆料", region:"美国", source:"DansDeals", cap:25, fallback:"DansDeals 最新优惠"},
+ {prefix:"toys", url:"https://9to5toys.com/feed/", cat:"全球购物羊毛", sub:"数码特价", type:"社区爆料", region:"美国", source:"9to5Toys", cap:20, fallback:"9to5Toys 数码产品特价"},
+ {prefix:"sos", url:"https://sharewareonsale.com/feed", cat:"免费软件游戏", sub:"软件限免", type:"限时免费", region:"全球", source:"SharewareOnSale", cap:20, fallback:"SharewareOnSale 软件限免"},
+ {prefix:"fcc", url:"https://www.freecodecamp.org/news/rss/", cat:"科技情报", sub:"免费教程", type:"免费教程", region:"全球", source:"freeCodeCamp", cap:10, fallback:"freeCodeCamp 免费编程教程"},
+ {prefix:"yt-dm", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UCrF3EFFx8eCWrKrX8ez60VQ", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"北美", source:"YouTube · DealMoon 北美省钱君", cap:8, fallback:"北美省钱君 DealMoon 的优惠视频"},
+ {prefix:"yt-dg", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UC5Qbo0AR3CwpmEq751BIy0g", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"美国", source:"YouTube · The Deal Guy", cap:8, fallback:"The Deal Guy 的省钱优惠视频"},
+ {prefix:"yt-h2s", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UC3WvpVKk_QgfNgzE5BvzdEw", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"美国", source:"YouTube · Hip2Save", cap:8, fallback:"Hip2Save 的优惠视频"},
+ {prefix:"yt-sd", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UC1Izvzn-5-PZ0SGPe03ThnA", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"美国", source:"YouTube · Slickdeals", cap:8, fallback:"Slickdeals 官方频道视频"},
+ {prefix:"yt-kcl", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UCrev69_lU9aDtEZylQnI54A", cat:"全球购物羊毛", sub:"YouTube 博主", type:"视频分享", region:"美国", source:"YouTube · Krazy Coupon Lady", cap:8, fallback:"Krazy Coupon Lady 的优惠券视频"},
+ {prefix:"yt-lg", url:"https://www.youtube.com/feeds/videos.xml?channel_id=UCj7hwd3wEYYp5l9LRPAo7YA", cat:"科技情报", sub:"YouTube 博主", type:"视频分享", region:"中文", source:"YouTube · 老郭种树", cap:8, fallback:"老郭种树的技巧与羊毛视频"}
 ];
 async function fetchHN(){
   const out=[]; const seen=new Set();
-  for(const q of ["free tier","free plan","free credits"]){
+  for(const q of ["free tier","free credits"]){
     const j=await fetchJSON("https://hn.algolia.com/api/v1/search?query="+encodeURIComponent(q)+"&tags=story&hitsPerPage=15");
     for(const h of (j.hits||[])){
       if(!h.title || seen.has(h.objectID)) continue; seen.add(h.objectID);
@@ -216,17 +240,60 @@ function parseAwesomeFreeLLM(text){
   return out;
 }
 
+
+async function fetchGamerPower(){
+  const j=await fetchJSON("https://www.gamerpower.com/api/giveaways?platform=pc&type=game");
+  const out=[];
+  for(const g of (Array.isArray(j)?j:[])){
+    if(!g.title || !g.open_giveaway_url) continue;
+    const end=g.end_date && g.end_date!=="N/A" ? new Date(g.end_date.replace(" ","T")) : null;
+    out.push({id:"gp-"+g.id, title:g.title, cat:"免费软件游戏", sub:"限时免费游戏", type:"限时免费", trust:"community", valueLabel:g.worth?("原价 "+g.worth+" 免费领"):"免费领", valueNum:parseFloat(String(g.worth||"").replace(/[^0-9.]/g,""))||0, desc:String(g.description||"").slice(0,200), endISO:end&&!isNaN(end)?end.toISOString():null, endLabel:end&&!isNaN(end)?String(g.end_date).slice(0,10):"限时（先到先得）", url:g.open_giveaway_url, source:"GamerPower", srcDate:null});
+    if(out.length>=20) break;
+  }
+  return out;
+}
+async function fetchEpic(){
+  const j=await fetchJSON("https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=en-US&country=US&allowCountries=US");
+  const els=(((j||{}).data||{}).Catalog||{}).searchStore ? j.data.Catalog.searchStore.elements||[] : [];
+  const out=[];
+  for(const el of els){
+    const promos=(el.promotions&&el.promotions.promotionalOffers)||[];
+    const upcoming=(el.promotions&&el.promotions.upcomingPromotionalOffers)||[];
+    let offer=null, isUpcoming=false;
+    for(const grp of promos){ for(const o of (grp.promotionalOffers||[])){ if(o.discountSetting && o.discountSetting.discountPercentage===0) offer=o; } }
+    if(!offer){ for(const grp of upcoming){ for(const o of (grp.promotionalOffers||[])){ if(o.discountSetting && o.discountSetting.discountPercentage===0){ offer=o; isUpcoming=true; } } } }
+    if(!offer) continue;
+    const slugPart=el.productSlug||el.urlSlug||"";
+    const end=new Date(offer.endDate), start=new Date(offer.startDate);
+    out.push({id:"epic-"+slug(el.title), title:el.title+(isUpcoming?"（即将免费）":"（本周免费）"), cat:"免费软件游戏", sub:"Epic 免费游戏", type:"限时免费", trust:"official", valueLabel:"Epic 本周免费", valueNum:0, desc:String(el.description||"").slice(0,200), endISO:isNaN(end)?null:end.toISOString(), endLabel:isNaN(end)?"以 Epic 商店为准":(isUpcoming?("开始："+start.toISOString().slice(0,10)+" · 截止："): "截止：")+end.toISOString().slice(0,10), url:slugPart?("https://store.epicgames.com/en-US/p/"+slugPart):"https://store.epicgames.com/en-US/free-games", source:"Epic Games Store", srcDate:null});
+    if(out.length>=6) break;
+  }
+  return out;
+}
+async function fetchCheapShark(){
+  const j=await fetchJSON("https://www.cheapshark.com/api/1.0/deals?upperPrice=0&pageSize=30&sortBy=Price",{"User-Agent":"GlobalDealHub/9.0 (+https://global-deal-hunter.u20261103.workers.dev)"});
+  const out=[];
+  for(const d of (Array.isArray(j)?j:[])){
+    if(!d.title || !d.dealID) continue;
+    out.push({id:"cs-"+d.dealID, title:d.title+"（Steam 免费领）", cat:"免费软件游戏", sub:"Steam 免费游戏", type:"限时免费", trust:"community", valueLabel:"原价 $"+(d.normalPrice||"?")+" 免费领", valueNum:parseFloat(d.normalPrice)||0, desc:"CheapShark 监测到 Steam 当前售价 $0 的游戏，点击直达领取页", endISO:null, endLabel:"限时（以 Steam 为准）", url:"https://www.cheapshark.com/redirect?dealID="+encodeURIComponent(d.dealID), source:"CheapShark · Steam", srcDate:null});
+    if(out.length>=20) break;
+  }
+  return out;
+}
+
 async function refresh(env){
-  const counts={seed:SEED.length+SEED_MEDIA.length, freeForDev:0, publicApis:0, github:0, rss:0, hackerNews:0, telegram:0, relayNav:0, freeLlm:0};
-  const errors=[]; let items=[...SEED, ...SEED_MEDIA];
+  const counts={seed:SEED.length+SEED_MEDIA.length+SEED_UCARD.length, freeForDev:0, publicApis:0, github:0, rss:0, hackerNews:0, telegram:0, relayNav:0, freeLlm:0, gamerPower:0, epic:0};
+  const errors=[]; let items=[...SEED, ...SEED_MEDIA, ...SEED_UCARD];
+  for(const f of RSS_FEEDS){ try{ const t=await fetchText(f.url); const p=parseRSS(t,f); counts.rss+=p.length; items=items.concat(p); }catch(e){ errors.push(f.prefix+": "+e.message); } }
+  for(const [ch,label] of TG_CHANNELS){ try{ const p=await fetchTelegramChannel(ch,label); counts.telegram+=p.length; items=items.concat(p); }catch(e){ errors.push("tg-"+ch+": "+e.message); } }
+  try{ const p=await fetchHN(); counts.hackerNews=p.length; items=items.concat(p); }catch(e){ errors.push("hn: "+e.message); }
   try{ const t=await fetchText("https://raw.githubusercontent.com/ripienaar/free-for-dev/master/README.md"); const p=parseFreeForDev(t); counts.freeForDev=p.length; items=items.concat(p); }catch(e){ errors.push("free-for-dev: "+e.message); }
   try{ const t=await fetchText("https://raw.githubusercontent.com/public-apis/public-apis/master/README.md"); const p=parsePublicApis(t); counts.publicApis=p.length; items=items.concat(p); }catch(e){ errors.push("public-apis: "+e.message); }
-  try{ const p=await fetchGitHub(); counts.github=p.length; items=items.concat(p); }catch(e){ errors.push("github: "+e.message); }
-  for(const f of RSS_FEEDS){ try{ const t=await fetchText(f.url); const p=parseRSS(t,f); counts.rss+=p.length; items=items.concat(p); }catch(e){ errors.push(f.prefix+": "+e.message); } }
-  try{ const p=await fetchHN(); counts.hackerNews=p.length; items=items.concat(p); }catch(e){ errors.push("hn: "+e.message); }
   try{ const t=await fetchText("https://raw.githubusercontent.com/kirito8/free-newapi/main/README.md"); const p=parseFreeNewapi(t); counts.relayNav=p.length; items=items.concat(p); }catch(e){ errors.push("free-newapi: "+e.message); }
   try{ const t=await fetchText("https://raw.githubusercontent.com/mnfst/awesome-free-llm-apis/main/README.md"); const p=parseAwesomeFreeLLM(t); counts.freeLlm=p.length; items=items.concat(p); }catch(e){ errors.push("awesome-free-llm: "+e.message); }
-  for(const [ch,label] of TG_CHANNELS){ try{ const p=await fetchTelegramChannel(ch,label); counts.telegram+=p.length; items=items.concat(p); }catch(e){ errors.push("tg-"+ch+": "+e.message); } }
+  try{ const p=await fetchGamerPower(); counts.gamerPower=p.length; items=items.concat(p); }catch(e){ errors.push("gamerpower: "+e.message); }
+  try{ const p=await fetchEpic(); counts.epic=p.length; items=items.concat(p); }catch(e){ errors.push("epic: "+e.message); }
+  try{ const p=await fetchGitHub(); counts.github=p.length; items=items.concat(p); }catch(e){ errors.push("github: "+e.message); }
   const seen=new Set(); items=items.filter(d=>{ const k=d.title+'|'+d.url; if(seen.has(k)) return false; seen.add(k); return true; });
   const meta={updatedAt:new Date().toISOString(), counts, errors, total:items.length};
   if(env && env.DEALS_KV){ await env.DEALS_KV.put("deals", JSON.stringify(items)); await env.DEALS_KV.put("meta", JSON.stringify(meta)); }
@@ -237,7 +304,7 @@ async function getData(env){
   if(env && env.DEALS_KV){
     try{
       const [d,m]=await Promise.all([env.DEALS_KV.get("deals","json"), env.DEALS_KV.get("meta","json")]);
-      if(d && m && (Date.now()-new Date(m.updatedAt).getTime()) < 2*3600*1000) return {items:d, meta:m, cached:true};
+      if(d && m && (Date.now()-new Date(m.updatedAt).getTime()) < 6*3600*1000) return {items:d, meta:m, cached:true};
       if(d && m){ const r=await refresh(env); return {...r, cached:false}; }
     }catch(e){ /* fall through to live refresh */ }
   }
@@ -331,8 +398,8 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 </div><script>
 const RES=${res};
 const I18N={
- zh:{loading:'正在加载数据…',active:'进 行 中',today:'今 日 更 新',soon:'七 日 内 截 止',pending:'待 核 实',refresh:'立即自动抓取最新',fetching:'抓取中…',deals:'优惠情报',compute:'免费算力组合',themeTo:'深色',themeBack:'浅色',langBtn:'EN',subtitle:'全 球 羊 毛 情 报 中 心',searchPh:'搜索：Gemini、免费 API、银行奖励、空投、免费游戏…',sortNew:'最新更新',sortHot:'热度最高',sortEnd:'即将截止',official:'官方核实',listed:'清单收录',community:'社区爆料',unverified:'待核实',value:'价值/规格',deadline:'截止',updated:'更新',source:'来源',visit:'前往官方 / 原帖 →',empty:'暂无符合条件的条目',first:'首页',prev:'上一页',next:'下一页',last:'末页',pageInfo:function(t,p,q,n){return '共 '+t+' 条 · 第 '+p+' / '+q+' 页 · 每页 '+n+' 条'},lastUpdate:'上次自动更新',totalW:'共',someFail:'部分来源失败',loadFail:'加载失败，请稍后刷新页面重试',resRule:'规则：只用免费计划，不绑卡、不升级、不付费。遇登录、授权、验证码、密码立即停下由你接管；每项先实际验证可用再进入下一项。状态为信息整理，不代表已开通。',foot:'数据来源：人工核实种子（官方页）· free-for-dev · public-apis · GitHub Search（含 AI 网关/中转、自媒体工具、搞钱电子书）· Slickdeals · OzBargain · Doctor of Credit · Frequent Miler · Airdrops.io · Giveaway of the Day · Hacker News · V2EX · Telegram 免费游戏 · free-newapi 中转站导航 · awesome-free-llm-apis · 官方免费出图/视频与素材 API。系统每 2 小时自动抓取，过期自动归档。公益中转站由社区维护，存在掺水/跑路风险：只建议注册领免费额度试用，勿传敏感数据、勿大额充值；公开共享 Key 类渠道不收录。所有卡片均可点击直达来源页。'},
- en:{loading:'Loading…',active:'A C T I V E',today:'U P D A T E D · T O D A Y',soon:'E N D I N G · 7 D',pending:'U N V E R I F I E D',refresh:'Fetch latest now',fetching:'Fetching…',deals:'Deals',compute:'Free compute',themeTo:'Dark',themeBack:'Light',langBtn:'中文',subtitle:'G L O B A L · D E A L · I N T E L',searchPh:'Search: Gemini, free API, bank bonuses, airdrops, free games…',sortNew:'Newest',sortHot:'Most popular',sortEnd:'Ending soon',official:'Official',listed:'Listed',community:'Community',unverified:'Unverified',value:'Value',deadline:'Ends',updated:'Updated',source:'Source',visit:'Visit source →',empty:'No matching items',first:'First',prev:'Prev',next:'Next',last:'Last',pageInfo:function(t,p,q,n){return t+' items · Page '+p+' / '+q+' · '+n+' per page'},lastUpdate:'Last auto-update',totalW:'total',someFail:'Some sources failed',loadFail:'Load failed, please refresh later',resRule:'Rules: free plans only — no card binding, no upgrades, no payments. Stop at any login, authorization, captcha or password step and hand over to the owner; verify each resource actually works before moving on. Statuses are informational, not activations.',foot:'Sources: hand-verified seeds (official pages) · free-for-dev · public-apis · GitHub Search (incl. AI gateways/relays, creator tools, money ebooks) · Slickdeals · OzBargain · Doctor of Credit · Frequent Miler · Airdrops.io · Giveaway of the Day · Hacker News · V2EX · Telegram free games · free-newapi relay index · awesome-free-llm-apis · official free image/video & stock APIs. Auto-refreshed every 2 hours; expired deals are archived automatically. Community relays may shut down or degrade: use free quotas only, never send sensitive data or deposit large sums. Shared public key channels are not listed. Every card links directly to its source.'}
+ zh:{loading:'正在加载数据…',active:'进 行 中',today:'今 日 更 新',soon:'七 日 内 截 止',pending:'待 核 实',refresh:'立即自动抓取最新',fetching:'抓取中…',deals:'优惠情报',compute:'免费算力组合',themeTo:'深色',themeBack:'浅色',langBtn:'EN',subtitle:'全 球 羊 毛 情 报 中 心',searchPh:'搜索：Gemini、免费 API、银行奖励、空投、免费游戏…',sortNew:'最新更新',sortHot:'热度最高',sortEnd:'即将截止',official:'官方核实',listed:'清单收录',community:'社区爆料',unverified:'待核实',value:'价值/规格',deadline:'截止',updated:'更新',source:'来源',visit:'前往官方 / 原帖 →',empty:'暂无符合条件的条目',first:'首页',prev:'上一页',next:'下一页',last:'末页',pageInfo:function(t,p,q,n){return '共 '+t+' 条 · 第 '+p+' / '+q+' 页 · 每页 '+n+' 条'},lastUpdate:'上次自动更新',totalW:'共',someFail:'部分来源失败',loadFail:'加载失败，请稍后刷新页面重试',resRule:'规则：只用免费计划，不绑卡、不升级、不付费。遇登录、授权、验证码、密码立即停下由你接管；每项先实际验证可用再进入下一项。状态为信息整理，不代表已开通。',foot:'数据来源：人工核实种子（官方页）· free-for-dev · public-apis · GitHub Search（含 AI 网关/中转、自媒体工具、搞钱电子书）· Slickdeals · OzBargain · Doctor of Credit · Frequent Miler · Airdrops.io · Giveaway of the Day · Hacker News · V2EX · Telegram 免费游戏 · free-newapi 中转站导航 · awesome-free-llm-apis · 官方免费出图/视频与素材 API。系统每 6 小时自动抓取（省流模式），过期自动归档。公益中转站由社区维护，存在掺水/跑路风险：只建议注册领免费额度试用，勿传敏感数据、勿大额充值；公开共享 Key 类渠道不收录。所有卡片均可点击直达来源页。'},
+ en:{loading:'Loading…',active:'A C T I V E',today:'U P D A T E D · T O D A Y',soon:'E N D I N G · 7 D',pending:'U N V E R I F I E D',refresh:'Fetch latest now',fetching:'Fetching…',deals:'Deals',compute:'Free compute',themeTo:'Dark',themeBack:'Light',langBtn:'中文',subtitle:'G L O B A L · D E A L · I N T E L',searchPh:'Search: Gemini, free API, bank bonuses, airdrops, free games…',sortNew:'Newest',sortHot:'Most popular',sortEnd:'Ending soon',official:'Official',listed:'Listed',community:'Community',unverified:'Unverified',value:'Value',deadline:'Ends',updated:'Updated',source:'Source',visit:'Visit source →',empty:'No matching items',first:'First',prev:'Prev',next:'Next',last:'Last',pageInfo:function(t,p,q,n){return t+' items · Page '+p+' / '+q+' · '+n+' per page'},lastUpdate:'Last auto-update',totalW:'total',someFail:'Some sources failed',loadFail:'Load failed, please refresh later',resRule:'Rules: free plans only — no card binding, no upgrades, no payments. Stop at any login, authorization, captcha or password step and hand over to the owner; verify each resource actually works before moving on. Statuses are informational, not activations.',foot:'Sources: hand-verified seeds (official pages) · free-for-dev · public-apis · GitHub Search (incl. AI gateways/relays, creator tools, money ebooks) · Slickdeals · OzBargain · Doctor of Credit · Frequent Miler · Airdrops.io · Giveaway of the Day · Hacker News · V2EX · Telegram free games · free-newapi relay index · awesome-free-llm-apis · official free image/video & stock APIs. Auto-refreshed every 6 hours (quota-saving mode); expired deals are archived automatically. Community relays may shut down or degrade: use free quotas only, never send sensitive data or deposit large sums. Shared public key channels are not listed. Every card links directly to its source.'}
 };
 const CAT_EN={'全部':'All','即将截止':'Ending soon','已结束':'Ended','我的收藏':'Favorites','AI 与订阅':'AI & Subscriptions','云与开发':'Cloud & Dev','免费 API':'Free APIs','GitHub 开源':'GitHub Open Source','全球购物羊毛':'Global Shopping','免费搞钱':'Free Money','免费软件游戏':'Free Software & Games','科技情报':'Tech Intel'};
 const SUB_EN={'全部小类':'All subcategories','免费 AI API 渠道':'Free AI API channels','公益中转站':'Community relays','免费出图出视频':'Free image/video APIs','免费素材 API':'Free stock APIs','自媒体工具':'Creator tools','搞钱电子书与指南':'Money ebooks & guides','银行与卡奖励':'Bank & card bonuses','里程积分':'Miles & points','加密空投':'Crypto airdrops','交易所活动':'Exchange promos','美国社区':'US community','澳洲社区':'AU community','每日免费软件':'Daily free software','免费游戏':'Free games','中文社区':'Chinese community','学生优惠':'Student deals','办公订阅':'Productivity subs','定向优惠':'Targeted deals','云厂商免费层':'Cloud free tiers','AI 网关/中转':'AI gateways','AI 中转/网关':'AI gateways & relays','免费 LLM 清单':'Free LLM lists','出图/视频项目':'Image/video projects'};
@@ -362,7 +429,7 @@ function render(){
  sToday.textContent=deals.filter(d=>d.srcDate===today).length;
  sSoon.textContent=deals.filter(soon7).length;
  sPending.textContent=active.filter(d=>d.trust==='unverified').length;
- if(meta){const names={seed:'人工核实',freeForDev:'free-for-dev',publicApis:'public-apis',github:'GitHub',rss:'全球社区',hackerNews:'Hacker News',telegram:'Telegram',relayNav:'中转站导航',freeLlm:'免费LLM清单'};metaLine.textContent=t.lastUpdate+'：'+new Date(meta.updatedAt).toLocaleString(lang==='en'?'en-US':'zh-CN')+' · '+t.totalW+' '+meta.total+(lang==='en'?' items':' 条')+' · '+Object.keys(meta.counts).map(k=>(names[k]||k)+' '+meta.counts[k]).join(' · ')+(meta.errors&&meta.errors.length?' · '+t.someFail+'：'+meta.errors.join('；'):'')}
+ if(meta){const names={seed:'人工核实',freeForDev:'free-for-dev',publicApis:'public-apis',github:'GitHub',rss:'全球社区',hackerNews:'Hacker News',telegram:'Telegram',relayNav:'中转站导航',freeLlm:'免费LLM清单',gamerPower:'GamerPower',epic:'Epic'};metaLine.textContent=t.lastUpdate+'：'+new Date(meta.updatedAt).toLocaleString(lang==='en'?'en-US':'zh-CN')+' · '+t.totalW+' '+meta.total+(lang==='en'?' items':' 条')+' · '+Object.keys(meta.counts).map(k=>(names[k]||k)+' '+meta.counts[k]).join(' · ')+(meta.errors&&meta.errors.length?' · '+t.someFail+'：'+meta.errors.join('；'):'')}
  renderChips();
  let q=document.getElementById('q').value.toLowerCase();
  let arr=deals.filter(d=>{
@@ -429,8 +496,13 @@ load(false);
 export default {
   async fetch(request, env, ctx){
     const url=new URL(request.url);
-    if(url.pathname==="/api/deals"){ const {items, meta}=await getData(env); return Response.json({deals:withStatus(items), meta}); }
-    if(url.pathname==="/api/refresh"){ const {items, meta}=await refresh(env); return Response.json({deals:withStatus(items), meta}); }
+    if(url.pathname==="/api/deals"){ const {items, meta}=await getData(env); return Response.json({deals:withStatus(items), meta},{headers:{"cache-control":"public,max-age=60,s-maxage=600"}}); }
+    if(url.pathname==="/api/refresh"){
+      if(url.searchParams.get("force")!=="1" && env && env.DEALS_KV){
+        try{ const m=await env.DEALS_KV.get("meta","json"); if(m && (Date.now()-new Date(m.updatedAt).getTime()) < 30*60*1000){ const {items, meta}=await getData(env); return Response.json({deals:withStatus(items), meta, throttled:true}); } }catch(e){}
+      }
+      const {items, meta}=await refresh(env); return Response.json({deals:withStatus(items), meta});
+    }
     if(url.pathname==="/health") return new Response("ok");
     return new Response(html(),{headers:{"content-type":"text/html;charset=utf-8","cache-control":"public,max-age=300"}});
   },
