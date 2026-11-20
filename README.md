@@ -4,7 +4,7 @@
 
 线上 Worker 版（主面板）：https://global-deal-hunter.u20261103.workers.dev/
 
-v3 起 Worker 为主面板并**全自动更新**：Cron 每 2 小时自动抓取 free-for-dev、public-apis、GitHub Search 等公开来源并写入 KV，打开页面时数据超过 2 小时也会自动刷新；过期活动自动归档。不再有手动添加，不依赖 Muse Space。
+v4 起 Worker 为主面板并**全自动更新**：Cron 每 2 小时抓取 8 类公开来源（人工核实种子、free-for-dev、public-apis、GitHub Search、OzBargain、V2EX、Hacker News、Telegram 免费游戏频道）写入 KV，共 400+ 条；打开页面时数据超过 2 小时也会自动刷新；过期活动自动归档；列表分页浏览（每页 24 条）。不再有手动添加，不依赖 Muse Space。来源明细和加来源方法见 docs/SOURCES.md，手把手部署见 docs/DEPLOY.md。
 
 ## 功能
 
