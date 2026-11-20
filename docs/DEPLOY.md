@@ -1,4 +1,4 @@
-# 手把手部署教程：GLOBAL DEAL HUB Worker（v11）
+# 手把手部署教程：GLOBAL DEAL HUB Worker（v12）
 
 跟着做，零基础也能部署成功。全程免费（Cloudflare Workers 免费计划足够），不需要绑卡。
 
