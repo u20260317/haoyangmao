@@ -2,7 +2,9 @@
 
 > 每 2 小时自动巡检全球优惠、免费资源、限时活动和金融服务优惠。AI 自动发现、验证、分类、整理值得关注的优惠信息。
 
-线上 Worker 版：https://global-deal-hunter.u20261103.workers.dev/
+线上 Worker 版（主面板）：https://global-deal-hunter.u20261103.workers.dev/
+
+v3 起 Worker 为主面板并**全自动更新**：Cron 每 2 小时自动抓取 free-for-dev、public-apis、GitHub Search 等公开来源并写入 KV，打开页面时数据超过 2 小时也会自动刷新；过期活动自动归档。不再有手动添加，不依赖 Muse Space。
 
 ## 功能
 
@@ -40,5 +42,5 @@ docs/
 
 ## 状态
 
-- Muse Space 版：负责每 2 小时 AI 巡检和数据库。
-- Worker 版：独立镜像看板，数据内置 + 本地收藏/手动添加。
+- Worker 版：主面板，自动抓取 + KV 缓存 + Cron 定时更新。
+- Muse Space 版：已停用为主数据源（历史版本）。
