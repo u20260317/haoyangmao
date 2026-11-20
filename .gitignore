@@ -1,0 +1,6 @@
+.env
+.env.*
+*.token
+*secret*
+node_modules/
+.wrangler/
