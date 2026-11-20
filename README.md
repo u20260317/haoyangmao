@@ -1,10 +1,10 @@
-# GLOBAL DEAL HUNTER | 全球羊毛情报中心
+# GLOBAL DEAL HUB | 全球羊毛情报中心
 
 > 每 2 小时自动巡检全球优惠、免费资源、限时活动和金融服务优惠。AI 自动发现、验证、分类、整理值得关注的优惠信息。
 
 线上 Worker 版（主面板）：https://global-deal-hunter.u20261103.workers.dev/
 
-v4 起 Worker 为主面板并**全自动更新**：Cron 每 2 小时抓取 8 类公开来源（人工核实种子、free-for-dev、public-apis、GitHub Search、OzBargain、V2EX、Hacker News、Telegram 免费游戏频道）写入 KV，共 400+ 条；打开页面时数据超过 2 小时也会自动刷新；过期活动自动归档；列表分页浏览（每页 24 条）。不再有手动添加，不依赖 Muse Space。来源明细和加来源方法见 docs/SOURCES.md，手把手部署见 docs/DEPLOY.md。
+v5 起品牌更名为 **GLOBAL DEAL HUB**。Worker 为主面板并**全自动更新**：Cron 每 2 小时抓取 12+ 公开来源（人工核实种子、free-for-dev、public-apis、GitHub Search、Slickdeals、OzBargain、Doctor of Credit、Frequent Miler、Airdrops.io、Giveaway of the Day、Hacker News、V2EX、Telegram 免费游戏频道）写入 KV，共 500+ 条；两级分类（大类 + 小类）+ 分页浏览（每页 24 条）；过期自动归档。不再有手动添加，不依赖 Muse Space。来源明细见 docs/SOURCES.md，手把手部署见 docs/DEPLOY.md。
 
 ## 功能
 
