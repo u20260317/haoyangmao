@@ -1,11 +1,11 @@
-# 手把手部署教程：GLOBAL DEAL HUB Worker（v8）
+# 手把手部署教程：GLOBAL DEAL HUB Worker（v11）
 
 跟着做，零基础也能部署成功。全程免费（Cloudflare Workers 免费计划足够），不需要绑卡。
 
 - Worker 名称：`global-deal-hunter`
 - 唯一代码文件：`worker/worker.js`（单文件，包含页面、抓取、解析、接口全部逻辑）
 - KV 绑定名：`DEALS_KV`（KV 命名空间标题：`global-deal-hunter-deals`）
-- Cron：`7 */2 * * *`（每 2 小时自动抓取一次，时间为 UTC）
+- Cron：`23 */6 * * *`（每 6 小时自动抓取一次，时间为 UTC）
 - 线上实例：https://global-deal-hunter.u20261103.workers.dev/
 
 ---
@@ -34,10 +34,10 @@
 3. KV namespace 下拉选择 `global-deal-hunter-deals`。
 4. 保存后重新 Deploy 一次。
 
-### 第 5 步：设置每 2 小时自动抓取（Cron）
+### 第 5 步：设置每 6 小时自动抓取（Cron）
 1. 还在这个 Worker 页面，点 **Settings → Triggers → Cron Triggers → Add Cron Trigger**。
-2. 填 `7 */2 * * *`，保存。
-3. 含义：每 2 小时的第 7 分钟自动运行一次抓取（避开整点高峰）。
+2. 填 `23 */6 * * *`，保存。
+3. 含义：每 6 小时的第 7 分钟自动运行一次抓取（避开整点高峰）。
 
 ### 第 6 步：验证成功
 1. 打开 `https://global-deal-hunter.<你的子域>.workers.dev/` ，能看到深色面板即成功。
@@ -92,7 +92,7 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/<ACCOUNT_ID>/work
 ```bash
 curl -s -X PUT "https://api.cloudflare.com/client/v4/accounts/<ACCOUNT_ID>/workers/scripts/global-deal-hunter/schedules" \
   -H "Authorization: Bearer <TOKEN>" -H "Content-Type: application/json" \
-  -d '[{"cron":"7 */2 * * *"}]'
+  -d '[{"cron":"23 */6 * * *"}]'
 ```
 
 ### 第 7 步：验证（同方法 A 第 6 步）
@@ -113,5 +113,5 @@ curl -s -X PUT "https://api.cloudflare.com/client/v4/accounts/<ACCOUNT_ID>/worke
 - **`/api/deals` 里某个来源是 0 或报错**：看 `meta.errors`。对方站点限流/改版时单个来源失败不会拖垮全站，其余来源照常。
 - **改了代码但线上没变化**：浏览器缓存，地址后面加 `?v=2` 强刷；或 KV 是最终一致性，写入后全球同步最多约 1 分钟。
 - **Cron 没跑**：确认 Triggers 里 Cron 还在；注意 Cron 时间是 UTC。也可以随时用 `/api/refresh` 手动触发。
-- **免费额度**：Workers 免费计划每天 100,000 次请求、KV 免费额度对本项目（每 2 小时写 2 个键）绰绰有余。
+- **免费额度**：Workers 免费计划每天 100,000 次请求、KV 免费额度对本项目（每 6 小时写 2 个键）绰绰有余。
 - **安全**：仓库和代码里永远不要出现 Token、密码、验证码、节点链接。GitHub 仓库的 `.gitignore` 已拦截 `.env` 和 `*secret*` 等文件。
